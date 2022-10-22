@@ -1,0 +1,8 @@
+config/*
+!config/example.php
+composer.lock
+www-dev/upload/*
+www-prod/upload/*
+tmp/*
+logs/*
+vendor/*
