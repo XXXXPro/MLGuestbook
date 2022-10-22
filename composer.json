@@ -1,0 +1,20 @@
+{
+    "name": "xxxxpro/pcatalog",
+    "description": "Sites catalog script with categories, subcategory filters and site types",
+    "type": "project",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "XXXX Pro",
+            "email": "me@4xpro.ru"
+        }
+    ],
+    "minimum-stability": "alpha",
+    "require": {
+        "php": ">=7.0"
+    },
+    "autoload": {
+        "psr-4": {"MLFW\\": "MLFW/" },
+        "psr-4": {"AppCatalog\\": "" }
+    }    
+}
