@@ -9,8 +9,8 @@
 
 namespace MLFW;
 
-require __DIR__."interfaces.php";
-require __DIR__."functions.php";
+require __DIR__."/interfaces.php";
+require __DIR__."/functions.php";
 
 class Application {
   private $_params;
