@@ -5,14 +5,20 @@
  *  @version 0.90
  *  @url 
  *  MindLife FrameWork router stub class for single-page apps. 
- *  Always return Index as controller name class
+ *  Always return controller class name specified in constructor
  *  ================================ **/
 
-namespace MLFW\Router;
+namespace MLFW\routers;
 
 class Stub implements \MLFW\IRouter {
+  private $action_name;
+
+  public function __construct($params) {
+    $this->action_name = $params;
+  }
+
   public function getAction($url): string {
-    return 'Actions\\Index';
+    return $this->action_name;
   }
 
   public function route($name,$params):string {

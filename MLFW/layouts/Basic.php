@@ -8,7 +8,7 @@
  *  MindLife FrameWork basic layout class (defaults to text/plain )
  *  ================================ **/
 
-namespace MLFW\Layouts;
+namespace MLFW\layouts;
 
 class Basic {
   private $mime;

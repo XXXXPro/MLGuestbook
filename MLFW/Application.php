@@ -19,7 +19,8 @@ class Application {
 
   function __construct($params) {
     $this->_params = $params;
-    if (empty($this->_params['router'])) $this->_params['router']='\\MLFW\\Router\\Basic';
+    if (empty($this->_params['router'])) $this->_params['router']='MLFW\\Routers\\Stub';
+    if (empty($this->_params['router_settings'])) $this->_params['router_settings']=null;
   }
 
   function init() {
@@ -27,6 +28,9 @@ class Application {
   }
 
   function main() {
-
+    $this->router = new $this->_params['router']($this->_params['router_settings']);
+    $controller_class = $this->router->getAction('/');
+    $controller = new $controller_class;
+    $layout = $controller->exec(null);
   }
 }
