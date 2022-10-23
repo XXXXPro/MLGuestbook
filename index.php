@@ -1,3 +1,3 @@
 <?php
 
-include __DIR__."/www-devel/index.php";
+include __DIR__."/www-dev/index.php";
