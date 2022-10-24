@@ -18,3 +18,10 @@ interface IRouter {
 interface IAction {
   public function  exec($params):Layouts\Basic;
 }
+
+class ExceptionConfig extends \Exception {}
+class ExceptionSecurity extends \Exception {}
+class Exception404 extends \Exception {}
+class Exception410 extends \Exception {}
+class Exception403 extends \Exception {}
+class ExceptionBanned extends \Exception {}
