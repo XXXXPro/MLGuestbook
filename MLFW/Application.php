@@ -25,7 +25,8 @@ class Application {
       'router'=>'MLFW\\Routers\\Stub',
       'router_settings'=>null,
       'ob_handler'=>null,
-      'error_reporting'=>0
+      'error_reporting'=>0,
+      'display_errors'=>0
     ];
     foreach ($default_values as $key=>$def_value) if (!isset($this->_params[$key])) $this->_params[$key]=$def_value;    
   }
@@ -34,9 +35,28 @@ class Application {
     // starting output buffering
     ob_start($this->_params['ob_handler']);
     // enabling errors display
-    ini_set("error_reporting",(string)$this->_params['error_reporing']);
+    ini_set("error_reporting",(string)$this->_params['error_reporting']);
+    ini_set("display_errors",(string)$this->_params['display_errors']);
+    // initializing database if needed
+    $this->init_db();
     // creating router class
     $this->router = new $this->_params['router']($this->_params['router_settings']);
+  }
+
+  function init_db() {
+    if (!empty($this->_params['databases'])) { 
+      $err_msg = '';
+      foreach ($this->_params['databases'] as $dbdata) {
+        try {
+          $this->db = new \PDO($dbdata['dsn'],$dbdata['user'],$dbdata['password'],$dbdata['options']);
+          break; // if connected successfully, no need to try other databases
+        }
+        catch (\PDOException $e) {
+          $err_msg.= $e->getMessage();
+        }
+      }
+      if (!is_object($this->db)) throw new \PDOException("Unable to connect to any of databases! ".$err_msg);
+    }
   }
 
   function main() {
@@ -59,6 +79,9 @@ class Application {
     catch (Exception404 $e) {
       $this->show_error(404,$e->getMessage(),$e);
     }
+    catch (\PDOException $e) {
+      $this->show_error(503,$e->getMessage(),$e);
+    }    
     catch (\Exception $e) {
       $this->show_error(500,'General error: '.$e->getMessage(),$e);
     }
@@ -66,12 +89,11 @@ class Application {
 
   function show_error(int $code,string $text,\Exception $e=null) {
     if (class_exists('Layouts\\ErrorPage')) {
-      $errpage = new Layouts\ErrorPage(500);
+      $errpage = new Layouts\ErrorPage($code);
       $errpage->wrap($e);
     }
     else {
-      // $error_strings = [4]
-      // header(); // TODO: error code output
+      http_code($code);
       print $text;
     }
   }
