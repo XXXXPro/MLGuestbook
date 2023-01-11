@@ -8,9 +8,10 @@ use MLFW\Models\Entity as ModelsEntity;
 use function \MLFW\app, \MLFW\_dbg;
 
 class Entity {
-  const FIELDS = ['id','type','owner','title','url','descr','seo_title','seo_descr','seo_keywords','rating_pro','rating_contra']; // No text and extra fields, they should be added manually if needed!
+  const FIELDS = ['id','enabled','type','owner','title','url','descr','seo_title','seo_descr','seo_keywords','rating_pro','rating_contra']; // No text and extra fields, they should be added manually if needed!
 
   public $id=null;
+  public $enabled=true;
   public $type;
   public $owner=null;
   public $title;
@@ -54,7 +55,7 @@ class Entity {
     return $classname;
   }
 
-  static function getRelated($id, int $rel_type,$texts=false,$extra=false) {
+  static function getRelated($id, int $rel_type,bool $texts=false,bool $extra=false) {
     $id=self::extractId($id);
     $columns = ''.join(',',self::FIELDS).'';
     if ($texts) $columns.=',texts';
@@ -65,7 +66,7 @@ class Entity {
     return $stmt->fetchAll(\PDO::FETCH_CLASS, '\\MLFW\\Models\\Entity');
   }
 
-  static function getRelatedReverse(int $id, int $rel_type) {
+  static function getRelatedReverse(int $id, int $rel_type,bool $texts=false,bool $extra=false) {
     $id=self::extractId($id);
     $columns = ''.join(',',self::FIELDS).'';
     if ($texts) $columns.=',texts';
@@ -84,8 +85,24 @@ class Entity {
 
   function save($rel_from=[],$rel_to=[]) {
     $fields = self::FIELDS+['text','extra'];
-    $columns = ''.join(',',self::FIELDS).'';
     $data = [];
-
+    foreach (self::FIELDS as $field) {
+      if ($field==='extra') $data['extra']=json_encode($this->extra);
+      else $data[$field]=$this->$field;
+    }
+    if ($this->id===null) {
+      $sql = 'INSERT INTO entity ('.join(',',$field).') VALUES (:'.join(', :').')';
+      $stmt = app()->db->prepare($sql);
+      $stmt->execute($data);
+      $this->id = app()->db->lastInsertId();
+    }
+    else {
+      $pairs = join(',',array_map(function ($field) {
+        return $field.='=:'.$field;
+      },$fields));
+      $sql = "UPDATE entity SET $pairs WHERE id=:id";
+      $stmt = app()->db->prepare($sql);
+      $stmt->execute($data);
+    }
   }
 }
