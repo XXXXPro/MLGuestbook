@@ -8,7 +8,7 @@
  *  Always return controller class name specified in constructor
  *  ================================ **/
 
-namespace MLFW\routers;
+namespace MLFW\Routers;
 
 class Stub implements \MLFW\IRouter {
   private $action_name;

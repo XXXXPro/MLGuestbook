@@ -11,10 +11,10 @@
 namespace MLFW\layouts;
 
 class Basic {
-  private $mime;
+  private $mime = 'text/plain';
   private $modified =  null;
   private $objects = [];
-  private $headers;
+  private $headers = [];
 
   public function wrap($obj):void {
     $this->objects[]=$obj;
