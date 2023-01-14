@@ -17,8 +17,8 @@ class Stub implements \MLFW\IRouter {
     $this->action_name = $params;
   }
 
-  public function getAction($url): string {
-    return $this->action_name;
+  public function getAction($url):array {
+    return [$this->action_name,[]];
   }
 
   public function route($name,$params):string {

@@ -11,7 +11,8 @@
 namespace MLFW;
 
 interface IRouter {
-  public function getAction($url):string;
+  public function __construct($params);
+  public function getAction($url):array;
   public function route($name,$params):string;
 };
 
@@ -25,3 +26,4 @@ class Exception404 extends \Exception {}
 class Exception410 extends \Exception {}
 class Exception403 extends \Exception {}
 class ExceptionBanned extends \Exception {}
+class ExceptionWrongData extends \Exception {}

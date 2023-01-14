@@ -63,11 +63,10 @@ class Application {
     try {
       $this->init();
 
-      $controller_class = $this->router->getAction('/');
+      list($controller_class,$controller_params) = $this->router->getAction('/');
       if (!class_exists($controller_class)) throw new Exception404("Class $controller_class not found!");
-      $controller = new $controller_class;
+      $controller = new $controller_class($controller_params);
       $result = $controller->exec(null);
-      // TODO: Add headers output if $result is instance of Layout, else output status 200
       print $result;
     }
     catch (ExceptionConfig $e) {
@@ -88,13 +87,14 @@ class Application {
   }
 
   function show_error(int $code,string $text,\Exception $e=null) {
+    http_response_code($code);    
     if (class_exists('Layouts\\ErrorPage')) {
-      $errpage = new Layouts\ErrorPage($code);
+      $errpage = new Layouts\ErrorPage();
       $errpage->wrap($e);
     }
     else {
-      http_code($code);
       print $text;
+
     }
   }
 }
