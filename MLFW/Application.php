@@ -62,8 +62,10 @@ class Application {
   function main() {
     try {
       $this->init();
-
-      list($controller_class,$controller_params) = $this->router->getAction('/');
+      $base_url = dirname($_SERVER['PHP_SELF']);
+      if ($base_url!=='/' && $base_url!=='\\') $url = str_replace($base_url,'',$_SERVER['REQUEST_URI']);
+      else $url = $_SERVER['REQUEST_URI'];
+      list($controller_class,$controller_params) = $this->router->getAction($url);
       if (!class_exists($controller_class)) throw new Exception404("Class $controller_class not found!");
       $controller = new $controller_class($controller_params);
       $result = $controller->exec(null);
@@ -94,7 +96,7 @@ class Application {
     }
     else {
       print $text;
-
+      if (!Debug::isEmpty()) print PHP_EOL."Debug info:".Debug::output();
     }
   }
 }

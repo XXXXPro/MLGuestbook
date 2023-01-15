@@ -1,6 +1,6 @@
 <?php
 
-namespace AppCatalog;
+namespace PCatalog;
 
 require __DIR__."/../config/www-dev.php";
 require __DIR__."/../vendor/autoload.php";

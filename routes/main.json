@@ -1,0 +1,4 @@
+[
+  { "rule" : "/", "name" : "root", "description": "Главная страница", "action": "Index" },
+  { "rule" : "/user/{id}/", "name" : "user", "description": "Главная страница", "patterns" : { "id": "\\d+" }, "action": "User" }
+]
