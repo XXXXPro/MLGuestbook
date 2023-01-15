@@ -15,11 +15,15 @@ class Debug {
 
   static public function dbg($params): void {
     foreach (func_get_args() as $name=> $value) {
-      Debug::$data .= $name.': '.var_export($value,true);
+      Debug::$data .= $name.': '.var_export($value,true).PHP_EOL;
     }
   }
+
+  static public function isEmpty():bool {
+    return empty(Debug::$data);
+  }
   
-  static public function __toString():string  {
+  static public function output():string  {
     return Debug::$data;
   }
 }
