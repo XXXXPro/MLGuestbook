@@ -17,7 +17,15 @@ interface IRouter {
 };
 
 interface IAction {
-  public function  exec($params):Layouts\Basic;
+  public function exec($params):Layouts\Basic;
+}
+
+interface IEventHandler {
+  public static function processEvent(string $name, object $event):void;
+}
+
+interface INotifier {
+  public function notify(string $receiver, string|object $data, $extra=null);
 }
 
 class ExceptionConfig extends \Exception {}
@@ -27,3 +35,4 @@ class Exception410 extends \Exception {}
 class Exception403 extends \Exception {}
 class ExceptionBanned extends \Exception {}
 class ExceptionWrongData extends \Exception {}
+class EventStopPropagation extends \Exception {}
