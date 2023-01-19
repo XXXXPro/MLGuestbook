@@ -2,6 +2,7 @@
 
 namespace MLFW\Models;
 
+use DateTime;
 use Exception;
 use MLFW\Models\Entity as ModelsEntity;
 
@@ -17,16 +18,21 @@ class Entity {
   public $title;
   public $url=null;  
   public $descr;
-  public $text;
+  public $text=false;
+  public $created=null;
+  public $last_modified;
   public $seo_title;
   public $seo_descr;
   public $seo_keywords;
   public $rating_pro=0;
   public $rating_contra=0;
-  public $extra=null;
+  public $extra=false;
 
   function __construct() {
     if (is_string($this->extra)) $this->extra = json_decode($this->extra,false);
+    if ($this->created===null) $this->created = new DateTime();
+    if (is_string($this->created)) $this->created = new DateTime($this->created);
+    if (is_string($this->last_modified)) $this->last_modified = new DateTime($this->last_modified);
   }
 
   static function getById(int $id) {
@@ -57,7 +63,7 @@ class Entity {
 
   static function getRelated($id, int $rel_type,bool $texts=false,bool $extra=false) {
     $id=self::extractId($id);
-    $columns = ''.join(',',self::FIELDS).'';
+    $columns = ''.join(',',self::FIELDS).',created,last_modified'; // Manually adding time fields
     if ($texts) $columns.=',texts';
     if ($extra) $columns.=',extra';
     $sql = 'SELECT '.$columns.' FROM entity e, entity_relation er WHERE er.rel_from=:id AND e.id=er.rel_to AND rel_type=:type';
@@ -68,7 +74,7 @@ class Entity {
 
   static function getRelatedReverse(int $id, int $rel_type,bool $texts=false,bool $extra=false) {
     $id=self::extractId($id);
-    $columns = ''.join(',',self::FIELDS).'';
+    $columns = ''.join(',',self::FIELDS).',created,last_modified';  // Manually adding time fields
     if ($texts) $columns.=',texts';
     if ($extra) $columns.=',extra';
     $sql = 'SELECT '.$columns.' FROM entity e, entity_relation er WHERE er.rel_to=:id AND e.id=er.rel_from AND rel_type=:type';
@@ -83,15 +89,19 @@ class Entity {
     throw new \MLFW\ExceptionSecurity("Wrong object passed!");
   }
 
-  function save($rel_from=[],$rel_to=[]) {
-    $fields = self::FIELDS+['text','extra'];
+  function save() {
+    $fields = self::FIELDS+['created','last_modified'];
+    if ($this->text!==false) $fields+=['text'];
+    if ($this->extra!==false) $fields+=['extra'];
     $data = [];
-    foreach (self::FIELDS as $field) {
-      if ($field==='extra') $data['extra']=json_encode($this->extra);
+    foreach ($fields as $field) {
+      if ($field==='extra') $data['extra']=$this->extra!==null ? json_encode($this->extra) : null;
+      elseif ($field==='created' || $field==='last_modified') $data[$field]=$this->$field->format('Y-m-d H:i:s');
       else $data[$field]=$this->$field;
     }
     if ($this->id===null) {
-      $sql = 'INSERT INTO entity ('.join(',',$field).') VALUES (:'.join(', :').')';
+      print_r($fields);
+      $sql = 'INSERT INTO entity ('.join(',',$fields).') VALUES (:'.join(', :',$fields).')';
       $stmt = app()->db->prepare($sql);
       $stmt->execute($data);
       $this->id = app()->db->lastInsertId();
@@ -104,5 +114,35 @@ class Entity {
       $stmt = app()->db->prepare($sql);
       $stmt->execute($data);
     }
+  }
+
+  function addRelations($rels_to=[]) {
+    if ($this->id===null) throw new \MLFW\ExceptionWrongData('Object has no id!');
+    $sql = 'INSERT IGNORE INTO entity_relation(rel_from,rel_to,rel_type) VALUES ';
+    foreach ($rels_to as $rel_id=>$rel_type) {
+      $sql.=sprintf('(%d,%d,%d),',$this->id,$rel_id,$rel_type);
+    }
+    $sql = substr($sql,0,-1);
+
+  }
+
+  function saveRelations($rels_to=[]) {
+
+  }
+
+  function saveRelationsReverse($rels_from=[]) {
+
+  }
+
+  function delete() {
+    if ($this->id!==null) {
+      $sql = 'DELETE FROM entity WHERE id=:id';
+      $stmt = app()->db->prepare($sql);
+      $stmt->execute(['id'=>$this->id]);
+      $sql = 'DELETE FROM entity_relation WHERE rel_from=:id OR rel_to=:id';
+      $stmt = app()->db->prepare($sql);
+      $stmt->execute(['id'=>$this->id]);
+    }
+    $this->id = null; // Resetting ID. If save function be called later, object will be re-inserted to database
   }
 }
