@@ -20,19 +20,24 @@ interface IAction {
   public function exec($params):Layouts\Basic;
 }
 
+interface IEventProcessor {
+  public function trigger(string $name, object $event_data):void;  
+}
+
 interface IEventHandler {
-  public static function processEvent(string $name, object $event):void;
+  public static function handleEvent(string $name, object $event):void;
 }
 
 interface INotifier {
-  public function notify(string $receiver, string|object $data, $extra=null);
+  public function notify(string $receiver, string $data, array $files=[], $extra=null);
 }
 
 class ExceptionConfig extends \Exception {}
 class ExceptionSecurity extends \Exception {}
-class Exception404 extends \Exception {}
-class Exception410 extends \Exception {}
-class Exception403 extends \Exception {}
-class ExceptionBanned extends \Exception {}
+class ExceptionHTTPCode extends \Exception {}
+class Exception404 extends ExceptionHTTPCode {}
+class Exception410 extends ExceptionHTTPCode {}
+class Exception403 extends ExceptionHTTPCode {}
+class ExceptionBanned extends ExceptionHTTPCode {}
 class ExceptionWrongData extends \Exception {}
 class EventStopPropagation extends \Exception {}

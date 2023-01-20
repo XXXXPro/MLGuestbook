@@ -12,7 +12,6 @@ namespace MLFW;
 use Exception;
 
 require __DIR__."/interfaces.php";
-require __DIR__."/functions.php";
 
 class Application {
   private $_params;
@@ -20,12 +19,16 @@ class Application {
   public $db;
   /** @var MLFW\IRouter */
   public $router;
+  /** @var MLFW\IEventProcessor */
+  public $events;
 
   function __construct($params) {
     $this->_params = $params;
     $default_values = [
       'router'=>'MLFW\\Routers\\Stub',
       'router_settings'=>null,
+      'events'=>'MLFW\\Events\\Basic',
+      'events_settings'=>null,
       'ob_handler'=>null,
       'error_reporting'=>0,
       'display_errors'=>0,
@@ -35,6 +38,7 @@ class Application {
   }
 
   function init() {
+    if (!function_exists('app')) require __DIR__."/functions.php";
     // starting output buffering
     ob_start($this->_params['ob_handler']);
     // enabling errors display
@@ -44,6 +48,8 @@ class Application {
     $this->init_db();
     // creating router class
     $this->router = new $this->_params['router']($this->_params['router_settings']);
+    // creating 
+    $this->events = new $this->_params['events']($this->_params['events_settings']);
   }
 
   function init_db() {
