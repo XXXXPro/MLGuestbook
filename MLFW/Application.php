@@ -38,12 +38,12 @@ class Application {
   }
 
   function init() {
-    if (!function_exists('app')) require __DIR__."/functions.php";
+    if (!\function_exists('app')) require __DIR__."/functions.php";
     // starting output buffering
-    ob_start($this->_params['ob_handler']);
+    \ob_start($this->_params['ob_handler']);
     // enabling errors display
-    ini_set("error_reporting",(string)$this->_params['error_reporting']);
-    ini_set("display_errors",(string)$this->_params['display_errors']);
+    \ini_set("error_reporting",(string)$this->_params['error_reporting']);
+    \ini_set("display_errors",(string)$this->_params['display_errors']);
     // initializing database if needed
     $this->init_db();
     // creating router class
@@ -64,7 +64,7 @@ class Application {
           $err_msg.= $e->getMessage();
         }
       }
-      if (!is_object($this->db)) throw new \PDOException("Unable to connect to any of databases! ".$err_msg);
+      if (!\is_object($this->db)) throw new \PDOException("Unable to connect to any of databases! ".$err_msg);
     }
   }
 
@@ -72,12 +72,12 @@ class Application {
     try {
       $this->init();
 
-      $base_url = dirname($_SERVER['PHP_SELF']);
-      if ($base_url!=='/' && $base_url!=='\\') $url = str_replace($base_url,'',$_SERVER['REQUEST_URI']);
+      $base_url = \dirname($_SERVER['PHP_SELF']);
+      if ($base_url!=='/' && $base_url!=='\\') $url = \str_replace($base_url,'',$_SERVER['REQUEST_URI']);
       else $url = $_SERVER['REQUEST_URI'];
       
       list($controller_class,$controller_params) = $this->router->getAction($url);
-      if (!class_exists($controller_class)) throw new Exception404("Class $controller_class not found!");
+      if (!\class_exists($controller_class)) throw new Exception404("Class $controller_class not found!");
       $controller = new $controller_class($controller_params);
       $result = $controller->exec(null);
       print $result;
