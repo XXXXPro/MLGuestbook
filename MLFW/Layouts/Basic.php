@@ -10,6 +10,10 @@
 
 namespace MLFW\layouts;
 
+use MLFW\Debug;
+
+use function \MLFW\app;
+
 class Basic extends \MLFW\Template {
   private $mime = 'text/plain';
   private $charset = 'utf-8';
@@ -47,6 +51,7 @@ class Basic extends \MLFW\Template {
   public function getTemplate(): string {
     $result = '';
     foreach ($this->subitems as $obj) $result.=$obj;
+    if (app()->config('debug',false) && !Debug::isEmpty()) $result.=PHP_EOL.PHP_EOL.'DEBUG INFO: '.PHP_EOL.Debug::output();
     return $result;
   }
 }
