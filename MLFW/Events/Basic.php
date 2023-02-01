@@ -44,7 +44,7 @@ class Basic implements \MLFW\IEventProcessor {
       try {
         if (strpos($handler,'\\')===false && $this->default_namespace!=='') $result=$this->default_namespace.'\\'.$handler;        
         if (class_exists($handler) && !empty(class_implements($handler)['MLFW\IEventHandler'])) $handler::handleEvent($name,$event_data); 
-        else _dbg("Event %s, handler class %s not found or not implementing IEventHandler interface, skipping!");
+        else _dbg(\sprintf("Event \"%s\", handler class %s not found or not implementing IEventHandler interface, skipping!",$name,$handler));
       }
       catch (\MLFW\EventStopPropagation $e) { // if event handler wants to stop futher event propagation, it should throw this Exception
         break;
