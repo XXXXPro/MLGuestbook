@@ -68,6 +68,14 @@ class Application {
     }
   }
 
+  /** Returns parameter from application configuration. If parameter is not set, returns specified default value.
+   * @param string $param Parameter name
+   * @param mixed $default_value Default value to return if parameter is not defined.
+   */
+  function config(string $param, $default_value=null) {
+    return $this->_params[$param] ?? $default_value;
+  }
+
   function main() {
     try {
       $this->init();
