@@ -12,11 +12,20 @@
  abstract class Template {
   protected $data;
   protected $subitems = [];
-  public function __construct(object $obj) {
+  public function __construct(object $obj=null) {
     $this->data = $obj; 
   }
 
-  /** Wraps object with specified template class. 
+  /** Adds object . 
+  * Template must inherit MLFW\Template class object.
+  * @param object $obj Object to wrap with template
+  * @param string $wrapper Wrapper class name
+  **/
+  public function put(Template $obj):void {
+    $this->subitems[]=$obj->__toString();
+  }
+
+  /** Wraps object with specified template class and add. 
    * Template must inherit MLFW\Template class object.
    * @param object $obj Object to wrap with template
    * @param string $wrapper Wrapper class name
@@ -24,7 +33,7 @@
   public function wrap(object $obj, string $wrapper):void {
     if (\class_exists($wrapper) && \is_subclass_of($wrapper,'\\MLFW\\Template',true)) { // Allow only Template subclasses for security reasons
       $tmpl = new $wrapper($obj);
-      $this->subitems[]=$tmpl;
+      $this->put($tmpl);
     }
     else {
       _dbg("Class $wrapper not found!");
@@ -35,7 +44,7 @@
    * @param string $text Text to add
    **/
   public function wrapText(string $text):void {
-    $this->subitems[]=$text;
+    $this->subitems[]=$this->escape($text);
   }
 
   /** Wraps array of object with specified template class. 
@@ -69,6 +78,14 @@
       else _dbg("Object has no method $method!");
     }
   }
+
+  protected function attrEscape(string $str):string {
+    return htmlspecialchars($str,ENT_QUOTES,app()->config('charset','UTF-8'));
+  }
+
+  protected function escape(string $str):string {
+    return htmlspecialchars($str,ENT_HTML5,app()->config('charset','UTF-8'));
+  }  
 
   /**  This function should return rendered template (for example, HTML code), which can be included to layout template or send directly to user.
    * Usually it called from __toString function (__toString itself can't be abstract)

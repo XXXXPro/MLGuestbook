@@ -9,10 +9,10 @@ use MLFW\Models\Entity as ModelsEntity;
 use function \MLFW\app, \MLFW\_dbg;
 
 class Entity {
-  const FIELDS = ['id','enabled','type','owner','title','url','descr','seo_title','seo_descr','seo_keywords','rating_pro','rating_contra']; // No text and extra fields, they should be added manually if needed!
+  const FIELDS = ['id','status','type','owner','title','url','descr','seo_title','seo_descr','seo_keywords','rating_pro','rating_contra']; // No text and extra fields, they should be added manually if needed!
 
   public $id=null;
-  public $enabled=true;
+  public $status=0;
   public $type;
   public $owner=null;
   public $title;
@@ -87,6 +87,14 @@ class Entity {
     if ($obj instanceof self) return $obj->id;
     if (is_numeric($obj)) return intval($obj);
     throw new \MLFW\ExceptionSecurity("Wrong object passed!");
+  }
+
+  public static function load(array $conditions=[]):array {
+    $sql = 'SELECT * FROM entity WHERE 1=1 ';
+    // TODO: add conditions checking
+    $stmt=app()->db->prepare($sql);
+    $stmt->execute(['id'=>$id,'type'=>$rel_type]);    
+    return $stmt->fetchAll(\PDO::FETCH_CLASS, '\\MLFW\\Models\\Entity');
   }
 
   function save() {

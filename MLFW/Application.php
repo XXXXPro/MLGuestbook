@@ -32,7 +32,8 @@ class Application {
       'ob_handler'=>null,
       'error_reporting'=>0,
       'display_errors'=>0,
-      'debug'=>0
+      'debug'=>0,
+      'charset'=>'utf-8'
     ];
     foreach ($default_values as $key=>$def_value) if (!isset($this->_params[$key])) $this->_params[$key]=$def_value;    
   }

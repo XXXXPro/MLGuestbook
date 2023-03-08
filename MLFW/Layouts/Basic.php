@@ -15,10 +15,10 @@ use MLFW\Debug;
 use function \MLFW\app;
 
 class Basic extends \MLFW\Template {
-  private $mime = 'text/plain';
-  private $charset = 'utf-8';
-  private $last_modified =  null;
-  private $headers = [];
+  protected $mime = 'text/plain';
+  protected $charset = 'utf-8';
+  protected $last_modified =  null;
+  protected $headers = [];
 
   public function __construct() {
     header_register_callback([$this,'headersOutput']);
