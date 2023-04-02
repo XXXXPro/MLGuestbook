@@ -8,7 +8,7 @@
  *  MindLife FrameWork HTML layout class
  *  ================================ **/
 
-namespace MLFW\layouts;
+namespace MLFW\Layouts;
 
 use MLFW\Debug;
 
@@ -23,10 +23,11 @@ class HTML extends Basic {
   protected $head_script_code = '';
 
 
-  function __construct($params,\MLFW\Models\Entity $obj=null) {
-    parent::__construct($params);
+  function __construct(\MLFW\Models\Entity $obj=null) {
+    parent::__construct();
     if ($obj!==null) $this->setData($obj);
-    // TODO: Add defaults for title and description
+    if (empty($this->title)) $this->title = app()->config('site_title','');
+    $this->setMime('text/html');
   }
 
   public function setTitle(string $title):void {
@@ -75,15 +76,6 @@ class HTML extends Basic {
     $this->addLink('alternate',$url,'type="application/rss+atom"');
   }
 
-  protected function attrEscape(string $str):string {
-    return htmlspecialchars($str,ENT_QUOTES,app()->config('charset','UTF-8'));
-  }
-
-  protected function escape(string $str):string {
-    return htmlspecialchars($str,ENT_HTML5,app()->config('charset','UTF-8'));
-  }
-
-
   public function getMetaTags():string {
     $result='';
     foreach ($this->meta as $name=>$content) {
@@ -113,7 +105,7 @@ class HTML extends Basic {
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="{$this->attrEscape(app()->config('charset','utf-8'))}">
+    <meta charset="{$this->attrEscape($this->charset)}">
     <title>{$this->escape($this->title)}</title>
     {$style}
     {$this->getLinkTags()}
