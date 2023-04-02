@@ -29,7 +29,7 @@ interface IEventHandler {
 }
 
 interface INotifier {
-  public function notify(string $receiver, string $data, array $files=[], $extra=null);
+  public function send(string $receiver, string $data, array $files=[], $extra=null):int;
 }
 
 class ExceptionConfig extends \Exception {}
