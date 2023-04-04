@@ -6,3 +6,5 @@ www-prod/upload/*
 tmp/*
 logs/*
 vendor/*
+static/*
+data/*
