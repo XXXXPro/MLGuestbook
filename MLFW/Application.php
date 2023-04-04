@@ -77,6 +77,16 @@ class Application {
     return $this->_params[$param] ?? $default_value;
   }
 
+  function class_fqn(string $classname, string $interface):string {
+    if (strpos($classname,'\\')===false) { // if no namespace specified
+
+    }
+    else $classnames = [$classname];
+    if (empty(class_implements($classname)[$interface])) throw new ExceptionClassNotFound(htmlspecialchars("Class $classname not found or does not implement interface $interface."));
+    return $classname;
+
+  }
+
   function main() {
     try {
       $this->init();
@@ -100,6 +110,10 @@ class Application {
     catch (Exception404 $e) {
       $this->show_error(404,$e->getMessage(),$e);
     }
+    catch (Redirect $e) {
+      http_response_code($e->http_code);
+      header('Location: '.$e->location);
+    }
     catch (\PDOException $e) {
       $this->show_error(503,$e->getMessage(),$e);
     }    
@@ -112,7 +126,8 @@ class Application {
     http_response_code($code);    
     if (class_exists('Layouts\\ErrorPage')) {
       $errpage = new Layouts\ErrorPage();
-      $errpage->wrap($e);
+      $errpage->putText($text);
+      print $errpage;
     }
     else {
       header('Content-Type: text/plain; charset=utf-8');
