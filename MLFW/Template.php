@@ -25,6 +25,13 @@
     $this->subitems[]=$obj->__toString();
   }
 
+  /** Adds text string to template 
+   * @param string $text Text to add
+   **/
+  public function putText(string $text):void {
+    $this->subitems[]=$this->escape($text);
+  }
+
   /** Wraps object with specified template class and add. 
    * Template must inherit MLFW\Template class object.
    * @param object $obj Object to wrap with template
@@ -38,13 +45,6 @@
     else {
       _dbg("Class $wrapper not found!");
     }
-  }
-
-  /** Adds text string to template 
-   * @param string $text Text to add
-   **/
-  public function wrapText(string $text):void {
-    $this->subitems[]=$this->escape($text);
   }
 
   /** Wraps array of object with specified template class. 
