@@ -59,6 +59,7 @@ class HTMLCleaner {
   public static function clean(string $html,array $tags=HTMLCleaner::TAGS_INLINE):string {
     $html=strip_tags($html,'<'.join('><',array_keys($tags)).'>'); // at first clean tags except allowed
     $html = \mb_encode_numericentity($html, [0x80, 0x10FFFF, 0, ~0], 'UTF-8');
+    if (!class_exists('\\DOMDocument')) throw new \MLFW\ExceptionConfig('DOM extension not loaded!');
     $dom = new \DOMDocument();
     $dom->formatOutput = false;
     $dom->loadHTML($html);
