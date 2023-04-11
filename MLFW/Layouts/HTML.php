@@ -18,10 +18,10 @@ class HTML extends Basic {
   protected $title;
   protected $meta = [];
   protected $links = [];
-  protected $style = '';
   protected $body_script_code = '';
   protected $head_script_code = '';
-
+  protected $style_code = '';
+  protected $flash_messages = [];
 
   function __construct(\MLFW\Models\Entity $obj=null) {
     parent::__construct();
@@ -60,18 +60,27 @@ class HTML extends Basic {
     $this->addLink('preload',$href,);
   }
 
+  /** Puts JavaScript code into end of body section */
   public function addInlineScript(string $script_code) {
     $this->body_script_code.=$script_code.PHP_EOL;
   }
 
+  /** Puts JavaScript code into head section */
   public function addInlineHeadScript(string $script_code) {
     $this->head_script_code.=$script_code.PHP_EOL;
-   }  
+  }  
 
+  /** Puts CSS into style tag in head section */
+  public function addInlineStyle(string $style_code) {
+    $this->style_code.=$style_code.PHP_EOL;
+  }
+
+  /** Adds link to RSS feed into head section */
   public function addRSS(string $url):void {
     $this->addLink('alternate',$url,'type="application/rss+xml"');
   }
 
+  /** Adds link to ATOM feed into head section */
   public function addAtom(string $url):void {
     $this->addLink('alternate',$url,'type="application/rss+atom"');
   }
@@ -98,7 +107,7 @@ class HTML extends Basic {
     if (empty($this->meta['viewport'])) $this->meta['viewport']='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
     // TODO: add CSS minification
     $style=''; 
-    if (!empty($this->style)) $style='<style>'.PHP_EOL.$this->style.'</style>';
+    if (!empty($this->style_code)) $style='<style>'.PHP_EOL.$this->style_code.'</style>';
     $script='';
     if (!empty($this->head_script_code)) $script='<script>'.PHP_EOL.$this->head_script_code.'</script>';
     return <<<EOL
@@ -125,9 +134,17 @@ EOL;
   }
 
   public function getFooter():string {
-    $script='';
-    if (!empty($this->body_script_code)) $script='<script>'.PHP_EOL.$this->body_script_code.'</script>'.PHP_EOL;
-    return $script.'</body></html>';
+    $result='';
+    if (!empty($this->body_script_code)) $result.='<script>'.PHP_EOL.$this->body_script_code.'</script>'.PHP_EOL;
+    if (app()->config('debug',false) && !Debug::isEmpty()) $result.=PHP_EOL.PHP_EOL.'<!-- noindex --><div class="mlfw-debug">DEBUG INFO: '.nl2br(PHP_EOL.Debug::output()).'</div><!-- /noindex -->';    
+    return $result.'</body></html>';
+  }
+
+  /** Accepts string to show in flash message. 
+   * Typically flash messages are used to show result of user actions.
+   */
+  public function flash(string $text,int $code=E_NOTICE) {
+    $this->flash_messages[] = [$text,$code];
   }
 
   public function getTemplate(): string {
