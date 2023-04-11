@@ -43,7 +43,8 @@ class Basic extends \MLFW\Template {
 
   public function headersOutput():void {
     if (empty($this->headers['Content-Type'])) $this->headers['Content-Type']=$this->mime.'; charset='.$this->charset;
-    // if (empty($this->headers['Last-Modified'])) $this->headers['Last-Modified']=empty($this->modified) ? date('') : ; // TODO: add correct format output
+    if (empty($this->last_modified)) $this->last_modified = time(); // if no last modification date set, use now date
+    if (empty($this->headers['Last-Modified'])) $this->headers['Last-Modified']=gmdate('D, d M Y H:i:s \G\M\T',$this->last_modified);
     if (empty($this->headers['Content-Length'])) $this->headers['Content-Length']=ob_get_length();
     foreach ($this->headers as $name=>$value) header($name.': '.$value);
   }
