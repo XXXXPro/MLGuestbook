@@ -33,8 +33,12 @@ class Application {
       'error_reporting'=>0,
       'display_errors'=>0,
       'debug'=>0,
+<<<<<<< HEAD
       'charset'=>'utf-8',
       'session_name'=>'MLFW_sid'
+=======
+      'charset'=>'utf-8'
+>>>>>>> 3d499a2 (Session function added and some style changes)
     ];
     foreach ($default_values as $key=>$def_value) if (!isset($this->_params[$key])) $this->_params[$key]=$def_value;    
   }
@@ -82,8 +86,11 @@ class Application {
       $sess_name = $this->config('session_name','MLFW_sid');
       \session_name($sess_name);
       if (empty($params['cookie_httponly'])) $params['cookie_httponly']=1;
+<<<<<<< HEAD
       if (empty($params['cookie_samesite'])) $params['cookie_samesite']='Lax';
       if (empty($params['cookie_secure']) && !empty($_SERVER['HTTPS']))  $params['cookie_secure']=true; // if request via https, set "secure" attribute for cookie
+=======
+>>>>>>> 3d499a2 (Session function added and some style changes)
       \session_start($params);
     }
   }
@@ -92,7 +99,11 @@ class Application {
    * @param string $param Parameter name
    * @param mixed $default_value Default value to return if parameter is not defined.
    */
+<<<<<<< HEAD
   function config(string $param, mixed $default_value=null):mixed {
+=======
+  function config(string $param, $default_value=null) {
+>>>>>>> 3d499a2 (Session function added and some style changes)
     return $this->_params[$param] ?? $default_value;
   }
 
@@ -106,7 +117,11 @@ class Application {
 
   }*/
 
+<<<<<<< HEAD
   function main():void {
+=======
+  function main() {
+>>>>>>> 3d499a2 (Session function added and some style changes)
     try {
       $this->init();
 
@@ -129,11 +144,14 @@ class Application {
     catch (Exception404 $e) {
       $this->showError(404,$e->getMessage(),$e);
     }
+<<<<<<< HEAD
     catch (Exception405 $e) {
       $allow = $e->methods;
       header('Allow: '.$allow);
       $this->showError(405,$e->getMessage(),$e);
     }
+=======
+>>>>>>> 3d499a2 (Session function added and some style changes)
     catch (Redirect $e) {
       http_response_code($e->http_code);
       header('Location: '.$e->location);
