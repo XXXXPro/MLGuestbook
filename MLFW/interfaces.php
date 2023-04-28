@@ -41,3 +41,4 @@ class Exception403 extends ExceptionHTTPCode {}
 class ExceptionBanned extends ExceptionHTTPCode {}
 class ExceptionWrongData extends \Exception {}
 class EventStopPropagation extends \Exception {}
+class ExceptionClassNotFound extends \Exception {}

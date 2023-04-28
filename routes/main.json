@@ -1,4 +1,4 @@
 [
-  { "rule" : "/", "name" : "root", "description": "Главная страница", "action": "Index" },
-  { "rule" : "/user/{id}/", "name" : "user", "description": "Главная страница", "patterns" : { "id": "\\d+" }, "action": "User" }
+  { "rule" : "/", "name" : "guestbook", "description": "Гостевая книга", "action": "\\PCatalog\\Actions\\Guestbook" },
+  { "rule" : "/test/", "name" : "index", "description": "Тестовая страница", "action": "\\PCatalog\\Actions\\Index" }
 ]

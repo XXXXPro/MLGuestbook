@@ -33,7 +33,8 @@ class Application {
       'error_reporting'=>0,
       'display_errors'=>0,
       'debug'=>0,
-      'charset'=>'utf-8'
+      'charset'=>'utf-8',
+      'session_name'=>'MLFW_sid'
     ];
     foreach ($default_values as $key=>$def_value) if (!isset($this->_params[$key])) $this->_params[$key]=$def_value;    
   }
@@ -69,15 +70,33 @@ class Application {
     }
   }
 
+  /** Starts PHP session. If session is already started, does nothing. 
+   * If sessions are disabled in PHP configuration, throws ExceptionConfig. 
+   * For security reasons parameter cookie_httponly is always set.
+   *  @param array $params — Params to be passed to session_start function.  
+   */
+  function session($params=[]):void {
+    $status = \session_status();
+    if ($status === \PHP_SESSION_DISABLED) throw new ExceptionConfig('Sessions are disabled in PHP settings');
+    elseif ($status === \PHP_SESSION_NONE) { 
+      $sess_name = $this->config('session_name','MLFW_sid');
+      \session_name($sess_name);
+      if (empty($params['cookie_httponly'])) $params['cookie_httponly']=1;
+      if (empty($params['cookie_samesite'])) $params['cookie_samesite']='Lax';
+      if (empty($params['cookie_secure']) && !empty($_SERVER['HTTPS']))  $params['cookie_secure']=true; // if request via https, set "secure" attribute for cookie
+      \session_start($params);
+    }
+  }
+
   /** Returns parameter from application configuration. If parameter is not set, returns specified default value.
    * @param string $param Parameter name
    * @param mixed $default_value Default value to return if parameter is not defined.
    */
-  function config(string $param, $default_value=null) {
+  function config(string $param, mixed $default_value=null):mixed {
     return $this->_params[$param] ?? $default_value;
   }
 
-  function class_fqn(string $classname, string $interface):string {
+/*  function class_fqn(string $classname, string $interface):string {
     if (strpos($classname,'\\')===false) { // if no namespace specified
 
     }
@@ -85,9 +104,9 @@ class Application {
     if (empty(class_implements($classname)[$interface])) throw new ExceptionClassNotFound(htmlspecialchars("Class $classname not found or does not implement interface $interface."));
     return $classname;
 
-  }
+  }*/
 
-  function main() {
+  function main():void {
     try {
       $this->init();
 
