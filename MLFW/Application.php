@@ -47,14 +47,14 @@ class Application {
     \ini_set("error_reporting",(string)$this->_params['error_reporting']);
     \ini_set("display_errors",(string)$this->_params['display_errors']);
     // initializing database if needed
-    $this->init_db();
+    $this->initDB();
     // creating router class
     $this->router = new $this->_params['router']($this->_params['router_settings']);
     // creating 
     $this->events = new $this->_params['events']($this->_params['events_settings']);
   }
 
-  function init_db() {
+  function initDB() {
     if (!empty($this->_params['databases'])) { 
       $err_msg = '';
       foreach ($this->_params['databases'] as $dbdata) {
@@ -121,27 +121,27 @@ class Application {
       print $result;
     }
     catch (ExceptionConfig $e) {
-      $this->show_error(500,'Configuration error: '.$e->getMessage(),$e);
+      $this->showError(500,'Configuration error: '.$e->getMessage(),$e);
     }
     catch (ExceptionSecurity $e) {    
-      $this->show_error(500,'Security error: '.$e->getMessage(),$e);
+      $this->showError(500,'Security error: '.$e->getMessage(),$e);
     }
     catch (Exception404 $e) {
-      $this->show_error(404,$e->getMessage(),$e);
+      $this->showError(404,$e->getMessage(),$e);
     }
     catch (Redirect $e) {
       http_response_code($e->http_code);
       header('Location: '.$e->location);
     }
     catch (\PDOException $e) {
-      $this->show_error(503,$e->getMessage(),$e);
+      $this->showError(503,$e->getMessage(),$e);
     }    
     catch (\Exception $e) {
-      $this->show_error(500,'General error: '.$e->getMessage(),$e);
+      $this->showError(500,'General error: '.$e->getMessage(),$e);
     }
   }
 
-  function show_error(int $code,string $text,\Exception $e=null) {
+  function showError(int $code,string $text,\Exception $e=null) {
     http_response_code($code);    
     if (class_exists('Layouts\\ErrorPage')) {
       $errpage = new Layouts\ErrorPage();
