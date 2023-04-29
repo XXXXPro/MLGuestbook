@@ -129,6 +129,11 @@ class Application {
     catch (Exception404 $e) {
       $this->showError(404,$e->getMessage(),$e);
     }
+    catch (Exception405 $e) {
+      $allow = $e->methods;
+      header('Allow: '.$allow);
+      $this->showError(405,$e->getMessage(),$e);
+    }
     catch (Redirect $e) {
       http_response_code($e->http_code);
       header('Location: '.$e->location);

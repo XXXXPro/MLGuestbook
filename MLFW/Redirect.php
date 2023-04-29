@@ -11,8 +11,6 @@
 
 namespace MLFW;
 
-use Exception;
-
 class Redirect extends ExceptionHTTPCode {
   public string $location;
   public int $http_code;
