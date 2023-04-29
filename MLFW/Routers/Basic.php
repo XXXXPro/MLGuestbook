@@ -60,9 +60,16 @@ class Basic implements \MLFW\IRouter {
   }
 
   public function getAction($url): array {
-      $rules = $this->loadRules();
-      foreach ($rules as $route) {        
-        if (preg_match('|^'.$route->processed_pattern.'$|u',$url,$matches)) {
+    $url_matched = false;
+    $rules = $this->loadRules();
+    foreach ($rules as $route) {        
+      if (\preg_match('|^'.$route->processed_pattern.'$|u',$url,$matches)) {
+        $methods = [];
+        if (empty($route->methods)) $methods = ['*'];
+        elseif (\is_string($route->methods)) $methods = explode(',',$route->methods);
+        $methods = array_map('\\strtoupper',array_map('\\trim',$methods)); // making method list uppercase and removing spaces
+        $url_matched = true;
+        if (in_array(\MLFW\Helpers\HTTP::requestMethod(),$methods) || in_array('*',$methods)) {// if request method is in allowed list or any method allowed
           $params = [];
           for ($i=0, $count=count($route->named_params); $i<$count; $i++) {
             if (isset($matches[$i+1])) $params[$route->named_params[$i]]=$matches[$i+1];
@@ -72,9 +79,12 @@ class Basic implements \MLFW\IRouter {
           if (strpos($result,'\\')===false && $this->default_namespace!=='') $result=$this->default_namespace.'\\'.$result;
           return [$result,$params];
         }
+        else $allow_methods = $methods;
       }
+    }
     
-    throw new \MLFW\Exception404('No route for this URL!');
+    if ($url_matched) throw new \MLFW\Exception405(join(', ',$allow_methods));
+    else throw new \MLFW\Exception404('No route for this URL!');
   }
 
   public function route($name,$params):string {
