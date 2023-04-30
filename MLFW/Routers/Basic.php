@@ -62,6 +62,7 @@ class Basic implements \MLFW\IRouter {
   public function getAction($url): array {
     $url_matched = false;
     $rules = $this->loadRules();
+    $allow_methods = [];
     foreach ($rules as $route) {        
       if (\preg_match('|^'.$route->processed_pattern.'$|u',$url,$matches)) {
         $methods = [];
@@ -79,7 +80,7 @@ class Basic implements \MLFW\IRouter {
           if (strpos($result,'\\')===false && $this->default_namespace!=='') $result=$this->default_namespace.'\\'.$result;
           return [$result,$params];
         }
-        else $allow_methods = $methods;
+        else $allow_methods = $allow_methods + $methods; // adding methods to output in Allow header
       }
     }
     
