@@ -32,6 +32,20 @@ interface INotifier {
   public function send(string $receiver, string $data, array $files=[], $extra=null):int;
 }
 
+interface IAuth {
+  public function __construct(array $params=[]);
+  public function impersonate(string $login, string $scope, bool $permanent=true):bool;
+  public function checkAccess(string $action):bool;
+  public function getUserLogin():string;
+  public function getUserID():int;
+  public function getUser():object;
+  public function checkPassword(string $login, string $password):bool;
+  public function isBanned():bool;
+}
+
+const USER_GUEST_LOGIN = 'Guest';
+const USER_GUEST_ID = 0;
+
 class ExceptionConfig extends \Exception {}
 class ExceptionSecurity extends \Exception {}
 class ExceptionHTTPCode extends \Exception {}

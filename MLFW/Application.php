@@ -9,18 +9,18 @@
 
 namespace MLFW;
 
-use Exception;
-
 require __DIR__."/interfaces.php";
 
 class Application {
   private $_params;
   /** @var \PDO */
   public $db;
-  /** @var MLFW\IRouter */
+  /** @var \MLFW\IRouter */
   public $router;
-  /** @var MLFW\IEventProcessor */
+  /** @var \MLFW\IEventProcessor */
   public $events;
+  /** @var \MLFW\IAuth */
+  public $auth;
 
   function __construct($params) {
     $this->_params = $params;
@@ -29,6 +29,8 @@ class Application {
       'router_settings'=>null,
       'events'=>'MLFW\\Events\\Basic',
       'events_settings'=>null,
+      'auth'=>'MLFW\\Auth\\Stub',
+      'auth_settings'=>null,
       'ob_handler'=>null,
       'error_reporting'=>0,
       'display_errors'=>0,
@@ -52,6 +54,8 @@ class Application {
     $this->router = new $this->_params['router']($this->_params['router_settings']);
     // creating 
     $this->events = new $this->_params['events']($this->_params['events_settings']);
+    // user should be initialized when other components are ready
+    $this->initUser();
   }
 
   function initDB() {
@@ -68,6 +72,11 @@ class Application {
       }
       if (!\is_object($this->db)) throw new \PDOException("Unable to connect to any of databases! ".$err_msg);
     }
+  }
+
+  function initUser() {
+    $this->auth = new $this->_params['auth']($this->_params['auth_settings']);
+    if ($this->auth->isBanned()) throw new ExceptionBanned('You are not allowed to visit this site!');
   }
 
   /** Starts PHP session. If session is already started, does nothing. 
