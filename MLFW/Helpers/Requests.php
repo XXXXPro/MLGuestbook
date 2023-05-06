@@ -30,7 +30,7 @@ class Requests {
 
   public function __destruct() {
     if (!empty($this->ch)) \curl_close($this->ch);
-  }  
+  }
 
   public function setHeaders(array $headers) {
     \curl_setopt($this->ch,\CURLOPT_HTTPHEADER,$headers);
@@ -42,6 +42,20 @@ class Requests {
 
   public function setTimeout(int $timeout) {
     \curl_setopt($this->ch,\CURLOPT_TIMEOUT,$timeout);
+  }
+
+  public function setOpt(int $option, mixed $value) {
+    \curl_setopt($this->ch,$option,$value);
+  }
+
+  public function setCookies(string $cookies) {
+    \curl_setopt($this->ch,\CURLOPT_COOKIE,$cookies);
+  }
+
+  /** Sets file where cookies are saved. If file already exists, loads cookies from it. */
+  public function setCookieJar(string $filename) {
+    if (\is_readable($filename)) \curl_setopt($this->ch,\CURLOPT_COOKIEFILE,$filename);
+    \curl_setopt($this->ch,\CURLOPT_COOKIEJAR,$filename);
   }
 
   /** Return HTTP status code of last request */
