@@ -82,18 +82,21 @@ class Application {
   /** Starts PHP session. If session is already started, does nothing. 
    * If sessions are disabled in PHP configuration, throws ExceptionConfig. 
    * For security reasons parameter cookie_httponly is always set.
-   *  @param array $params — Params to be passed to session_start function.  
+   *  @param bool $only_if_exists — Start session only if it has already created in previous requests and it's ID is passed via $_COOKIES, $_GET or $_POST.
+   *  @param array $params — Parameters to be passed to session_start function.  
+   *  @return bool — True if session has been created
    */
-  function session($params=[]):void {
+  function session(bool $only_if_exists=false, array $params=[]):bool {
+    $sess_name = $this->config('session_name','MLFW_sid');
+    if ($only_if_exists && empty($_COOKIE[$sess_name]) && empty($_GET[$sess_name]) && empty($_POST[$sess_name])) return false; // if no session ID present,  
+    \session_name($sess_name);    
     $status = \session_status();
     if ($status === \PHP_SESSION_DISABLED) throw new ExceptionConfig('Sessions are disabled in PHP settings');
     elseif ($status === \PHP_SESSION_NONE) { 
-      $sess_name = $this->config('session_name','MLFW_sid');
-      \session_name($sess_name);
       if (empty($params['cookie_httponly'])) $params['cookie_httponly']=1;
       if (empty($params['cookie_samesite'])) $params['cookie_samesite']='Lax';
       if (empty($params['cookie_secure']) && !empty($_SERVER['HTTPS']))  $params['cookie_secure']=true; // if request via https, set "secure" attribute for cookie
-      \session_start($params);
+      return \session_start($params);
     }
   }
 
