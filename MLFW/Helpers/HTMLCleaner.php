@@ -11,7 +11,7 @@
  *  ================================ **/
 
 namespace MLFW\Helpers;
-use function MLFW\_dbg;
+use function MLFW\_dbg, MLFW\app;
 
 
 class HTMLCleaner {
@@ -57,9 +57,10 @@ class HTMLCleaner {
    * 
    */
   public static function clean(string $html,array $tags=HTMLCleaner::TAGS_INLINE):string {
-    $html=strip_tags($html,'<'.join('><',array_keys($tags)).'>'); // at first clean tags except allowed
-    $html = \mb_encode_numericentity($html, [0x80, 0x10FFFF, 0, ~0], 'UTF-8');
-    if (!class_exists('\\DOMDocument')) throw new \MLFW\ExceptionConfig('DOM extension not loaded!');
+    $charset = app()->config('charset','UTF-8');
+    $html = \strip_tags($html,'<'.\join('><',\array_keys($tags)).'>'); // at first clean tags except allowed
+    $html = \mb_encode_numericentity($html, [0x80, 0x10FFFF, 0, ~0], $charset);
+    if (!\class_exists('\\DOMDocument')) throw new \MLFW\ExceptionConfig('DOM extension not loaded!');
     $dom = new \DOMDocument();
     $dom->formatOutput = false;
     $dom->loadHTML($html);
@@ -69,6 +70,14 @@ class HTMLCleaner {
       if (!empty($tags[$node->parentNode->nodeName])) { // if tag in in list, checking attribute
         $attrs = is_array($tags[$node->parentNode->nodeName]) ? $tags[$node->parentNode->nodeName] : [$tags[$node->parentNode->nodeName]]; // if string specified as value, convert it to array
         if (!in_array($node->nodeName,$attrs)) $node->parentNode->removeAttribute($node->nodeName); // if attribute is not in allowed list, remove it
+      }
+    }
+    $links = $xpath->query('//@href|//@src');
+    foreach ($links as $link) {
+      $scheme = parse_url($link->textContent,PHP_URL_SCHEME);
+      if (strpos(strtolower($scheme),'script')!==false) {        
+        $link->parentNode->textContent = 'INSECURE LINK REMOVED: '.htmlspecialchars($link->nodeValue,ENT_QUOTES|ENT_SUBSTITUTE,$charset); // show, why link was removed (for admins, moderators and so on)
+        $link->nodeValue='#'; // removing dangerous link address
       }
     }
     return $dom->saveHTML();
