@@ -29,7 +29,7 @@ interface IEventHandler {
 }
 
 interface INotifier {
-  public function send(string $receiver, string $data, array $files=[], $extra=null):int;
+  public function send(string $receiver, string $data, array $files=[], mixed $extra=null):int;
 }
 
 interface IAuth {
@@ -41,6 +41,8 @@ interface IAuth {
   public function getUser():object;
   public function checkPassword(string $login, string $password):bool;
   public function isBanned():bool;
+  public function isGuest():bool;
+  public function logout():void;
 }
 
 const USER_GUEST_LOGIN = 'Guest';
@@ -49,9 +51,10 @@ const USER_GUEST_ID = 0;
 class ExceptionConfig extends \Exception {}
 class ExceptionSecurity extends \Exception {}
 class ExceptionHTTPCode extends \Exception {}
-class Exception404 extends ExceptionHTTPCode {}
-class Exception410 extends ExceptionHTTPCode {}
 class Exception403 extends ExceptionHTTPCode {}
+class Exception404 extends ExceptionHTTPCode {}
+class Exception405 extends ExceptionHTTPCode {}
+class Exception410 extends ExceptionHTTPCode {}
 class ExceptionBanned extends ExceptionHTTPCode {}
 class ExceptionWrongData extends \Exception {}
 class EventStopPropagation extends \Exception {}

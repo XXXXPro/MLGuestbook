@@ -57,4 +57,12 @@ class Stub implements \MLFW\IAuth {
   public function isBanned(): bool {
     return false;
   }
+
+  public function isGuest(): bool {
+    return true;
+  }
+
+  public function logout():void {
+
+  }
 }
