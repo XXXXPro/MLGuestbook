@@ -3,7 +3,7 @@
 namespace PCatalog\Actions;
 
 use Exception;
-use PCatalog\Models\Guestbook as ModelsGuestbook;
+use PCatalog\Models\Guestbook as ModelGuestbook;
 use \MLFW\Helpers;
 use stdClass;
 
@@ -15,7 +15,7 @@ class Guestbook implements \MLFW\IAction {
     $l->addLink('stylesheet','./www-dev/s/surface.css');
 
     if (\MLFW\Helpers\HTTP::isPost()) {
-      $new_item = new ModelsGuestbook;
+      $new_item = new ModelGuestbook;
       $new_item->text =  filter_input(INPUT_POST,'text',FILTER_DEFAULT);
       $new_item->owner = filter_input(INPUT_POST,'owner',FILTER_SANITIZE_SPECIAL_CHARS);
       $new_item->extra = new stdClass;
@@ -24,12 +24,19 @@ class Guestbook implements \MLFW\IAction {
       try {
         $new_item->save();
         $l->putText('Ваше сообщение поставлено на премодерацию');
+        $notifications = app()->config('guestbook_notifications',[]);
+        if (!empty($notifications)) {
+          $notify_sender = new \MLFW\Notification;
+          foreach ($notifications as $receiver=>$notifier) {
+            $notify_sender->send($notifier,$receiver,"Новое сообщение в гостевой книге от <b>".$new_item->owner."</b>:\r\n".$new_item->text);
+          }
+        }
         app()->events->trigger("newpost",$new_item);
       }
       catch (Exception $e) {
         $l->putText('Ошибка сохранения: '.$e->getMessage());
       }
-      throw new \MLFW\Redirect("./",303);
+      // throw new \MLFW\Redirect("./",303);
     }
     $l->form = new \PCatalog\Templates\GuestbookForm;
     $messages = \PCatalog\Models\Guestbook::load();
