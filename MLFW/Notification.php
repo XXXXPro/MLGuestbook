@@ -11,7 +11,9 @@
 
 namespace MLFW;
 
-class Notificaton {
+use Exception;
+
+class Notification {
 
   /** Sends notification using specified notification provider. 
    * Provider classes
@@ -24,21 +26,19 @@ class Notificaton {
    * @return int Zero if sending was successful, -1 if notification provider not found or any non-zero provider-specific error code
    * 
    * **/
-  public static function send(string $name, string $receiver, string $message, mixed $files=null, mixed $extra=null):int {
-    $classnames = [$name]; // TODO: add all namespace variants for classname checking with application\Notifiers namespace first and MLFW\Notifiers next
-    try {
-      foreach ($classnames as $classname)  {
-        if (class_exists($classname) && !empty(class_implements($classname)['\\MLFW\\INotifier'])) {
+  public static function send(string $name, string $receiver, string $message, array $files=[], mixed $extra=null):int {
+    $classnames = [$name,'\\MLFW\\Notifiers\\'.$name]; // TODO: add all namespace variants for classname checking with application\Notifiers namespace first and MLFW\Notifiers next
+    foreach ($classnames as $classname)  {
+      if (class_exists($classname)) {
+        if (!empty(class_implements($classname)['MLFW\\INotifier'])) {
           $notifier = new $classname;
           return $notifier->send($receiver,$message,$files,$extra); // if class found, executing it's send method and exiting
         }
       }
     }
-    finally {
-      _dbg("Notification provider ".htmlspecialchars($name)." class is missing!");
-      // TODO: add logging
-      return -1;
-    }
+    _dbg("Notification provider ".htmlspecialchars($name)." class is missing!");
+    // TODO: add logging
+    return -1;
   }
 
   // TODO: Add function for mass notification sending

@@ -32,6 +32,10 @@ interface INotifier {
   public function send(string $receiver, string $data, array $files=[], mixed $extra=null):int;
 }
 
+const NOTIFIER_OK = 0;
+const NOTIFIER_NO_API_KEY = -255;
+const NOTIFIER_BLOCKED = -254;
+
 interface IAuth {
   public function __construct(array $params=[]);
   public function impersonate(string $login, string $scope, bool $permanent=true):bool;
