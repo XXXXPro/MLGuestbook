@@ -28,7 +28,7 @@ class Guestbook implements \MLFW\IAction {
         if (!empty($notifications)) {
           $notify_sender = new \MLFW\Notification;
           foreach ($notifications as $receiver=>$notifier) {
-            $notify_sender->send($notifier,$receiver,"Новое сообщение в гостевой книге от <b>".$new_item->owner."</b>:\r\n".$new_item->text);
+            $notify_sender->send($notifier,$receiver,"<b>".$new_item->owner."</b> пишет:\r\n".$new_item->text,'Новое сообщение в гостевой книге');
           }
         }
         app()->events->trigger("newpost",$new_item);

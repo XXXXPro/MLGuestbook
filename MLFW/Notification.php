@@ -26,13 +26,14 @@ class Notification {
    * @return int Zero if sending was successful, -1 if notification provider not found or any non-zero provider-specific error code
    * 
    * **/
-  public static function send(string $name, string $receiver, string $message, array $files=[], mixed $extra=null):int {
+  public static function send(string $name, string $receiver, string $message, string $subject, array $files=[], mixed $extra=null):int {
     $classnames = [$name,'\\MLFW\\Notifiers\\'.$name]; // TODO: add all namespace variants for classname checking with application\Notifiers namespace first and MLFW\Notifiers next
+    $config = app()->config('notification_settings',[]); 
     foreach ($classnames as $classname)  {
       if (class_exists($classname)) {
         if (!empty(class_implements($classname)['MLFW\\INotifier'])) {
-          $notifier = new $classname;
-          return $notifier->send($receiver,$message,$files,$extra); // if class found, executing it's send method and exiting
+          $notifier = new $classname($config[$classname] ?? []); // passing config parameters to constructor. The key in notification_settings hash must match full class path
+          return $notifier->send($receiver,$message,$subject,$files,$extra); // if class found, executing it's send method and exiting
         }
       }
     }

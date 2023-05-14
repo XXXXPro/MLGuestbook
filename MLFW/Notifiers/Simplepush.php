@@ -16,17 +16,22 @@ use function \MLFW\app;
 
 class Simplepush implements \MLFW\INotifier {
   const SIMPLEPUSH_URL = 'https://api.simplepush.io/send';
+  protected $api_key;
 
-  public function send(string $receiver, string $data, array $files=[], mixed $extra=null):int {
-    $api_key = app()->config('API_Simplepush_key',null);
-    if (empty($api_key)) {
+  public function __construct(array $params) {
+    $this->api_key = $params['API_key'];
+  }
+
+  public function send(string $receiver, string $data, string $subject, array $files=[], mixed $extra=null):int {
+    if (empty($this->api_key)) {
       // TODO: log warning
       return \MLFW\NOTIFIER_NO_API_KEY;
     }
     $req = new \MLFW\Helpers\Requests();
     if (empty($extra)) $extra=[];
     $data = \strip_tags($data);
-    $params = ['key'=>$api_key,'msg'=>$data]+$extra;
+    $params = ['key'=>$this->api_key,'msg'=>$data]+$extra;
+    if (!empty($subject)) $params['title']=$subject;
     $req->post(Simplepush::SIMPLEPUSH_URL,$params);
     $http_status = $req->getStatus();
     if ($http_status===200) return \MLFW\NOTIFIER_OK;

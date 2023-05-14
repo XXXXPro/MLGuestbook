@@ -17,10 +17,14 @@ use function \MLFW\app;
 class Telegram implements \MLFW\INotifier {
   const TELEGRAM_ALLOWED_TAGS = '<b><strong><i>em><u><ins><s><strike><del><tg-spoiler><a><tg-emoji><code><pre>';
   const TELEGRAM_URL = 'https://api.telegram.org/bot{BOT_TOKEN}/sendMessage';
+  protected $api_key;
 
-  public function send(string $receiver, string $data, array $files=[], mixed $extra=null):int {
-    $api_key = app()->config('API_Telegram_key',null);
-    if (empty($api_key)) {
+  public function __construct(array $params) {
+    $this->api_key = $params['API_key'];
+  }
+
+  public function send(string $receiver, string $data, string $subject, array $files=[], mixed $extra=null):int {
+    if (empty($this->api_key)) {
       // TODO: log warning
       return \MLFW\NOTIFIER_NO_API_KEY;
     }
@@ -29,8 +33,8 @@ class Telegram implements \MLFW\INotifier {
     if ($extra['parse_mode']=='HTML') {
       $data = \strip_tags($data,Telegram::TELEGRAM_ALLOWED_TAGS); // removing tags not allowed by Telegram
     }
-    $url = \str_replace('{BOT_TOKEN}',$api_key,Telegram::TELEGRAM_URL);
-    $params = ['chat_id'=>$receiver,'text'=>$data]+$extra;
+    $url = \str_replace('{BOT_TOKEN}',$this->api_key,Telegram::TELEGRAM_URL);
+    $params = ['chat_id'=>$receiver,'text'=>$subject."\r\n".$data]+$extra;
     $body = $req->post($url,$params);
     $http_status = $req->getStatus();
     if ($http_status===200) return \MLFW\NOTIFIER_OK;

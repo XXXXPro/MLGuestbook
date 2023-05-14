@@ -29,7 +29,8 @@ interface IEventHandler {
 }
 
 interface INotifier {
-  public function send(string $receiver, string $data, array $files=[], mixed $extra=null):int;
+  public function __construct(array $params);
+  public function send(string $receiver, string $data, string $subject, array $files=[], mixed $extra=null):int;
 }
 
 const NOTIFIER_OK = 0;
