@@ -10,6 +10,10 @@ use stdClass;
 use function \MLFW\app, \MLFW\_dbg;
 
 class Guestbook implements \MLFW\IAction {
+  const MODERATE_NONE = 0; // always pass new messages with no premoderation
+  const MODERATE_ONLY_LINKS = 1; // puts message to premoderation if links or phones detected
+  const MODERATE_ALWAYS = 2; // always put new messages to premoderation
+
   public function exec($params=null):\MLFW\Layouts\Basic {
     $l =  new \PCatalog\Layouts\Guestbook;
     $l->addLink('stylesheet','./www-dev/s/surface.css');
@@ -21,9 +25,19 @@ class Guestbook implements \MLFW\IAction {
       $new_item->extra = new stdClass;
       $new_item->extra->email = filter_input(INPUT_POST,'email',FILTER_SANITIZE_EMAIL);
       $new_item->extra->ip = filter_input(INPUT_SERVER,'REMOTE_ADDR',FILTER_VALIDATE_IP,FILTER_FLAG_IPV4|FILTER_FLAG_IPV6);
+      $mode = app()->config('guestbook_premoderate_mode',2);
+      $new_item->status = $mode;
+      if ($mode==Guestbook::MODERATE_ONLY_LINKS) { // checking for links or phones
+        $domains = 'aero|biz|com|edu|gov|info|int|mobi|name|net|org|pro|tel|travel|online|guru|club|ru|su|moscow|eu|ua|com\\.ua|kz|kg|by|uz|ge|az|am|co\\.il|ру|рф'; // TLD domains to recognize
+        $text = ' '.$new_item->text.' ';
+        if (\preg_match('|https?://|i',$text) ||
+          \preg_match("/[a-z\-]\.$domains\W/i",$text) ||
+          \preg_match('|\+?\d{1,3}\s*\(?\d{3,5}\)?\s*\d{1,3}[—–\-\s]*\d{2}[—–\-\s]*\d{2}|',$new_item->text)) $new_item->status = 2;
+      }
       try {
         $new_item->save();
-        $l->putText('Ваше сообщение поставлено на премодерацию');
+        if ($new_item->status==2) $l->putText('Ваше сообщение поставлено на премодерацию!');
+        else $l->putText('Ваше сообщение отправлено!');
         $notifications = app()->config('guestbook_notifications',[]);
         if (!empty($notifications)) {
           $notify_sender = new \MLFW\Notification;
@@ -36,7 +50,7 @@ class Guestbook implements \MLFW\IAction {
       catch (Exception $e) {
         $l->putText('Ошибка сохранения: '.$e->getMessage());
       }
-      // throw new \MLFW\Redirect("./",303);
+      throw new \MLFW\Redirect("./",303);
     }
     $l->form = new \PCatalog\Templates\GuestbookForm;
     $messages = \PCatalog\Models\Guestbook::load();
@@ -44,6 +58,7 @@ class Guestbook implements \MLFW\IAction {
       $message->text = \MLFW\Helpers\HTMLCleaner::clean($message->text,['a'=>'href','img'=>['src','alt']]);
     }
     $l->wrapAll($messages,'\\PCatalog\\Templates\\GuestbookEntry');
+    _dbg(\sprintf('Memory usage: %d bytes, %d full.',memory_get_peak_usage(),memory_get_peak_usage(true)));
 
     return $l;
   } 
