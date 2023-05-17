@@ -25,7 +25,7 @@ class Stub implements \MLFW\IAuth {
     $this->username = $params['username'] ?? strtoupper(USER_GUEST_LOGIN[0]).substr(USER_GUEST_LOGIN,1);
   }
 
-  public function impersonate(string $login, string $scope, bool $permanent=true):bool {
+  public function impersonate(string $login, string $scope, int|bool|null $lifetime=null):bool {
     return $login===USER_GUEST_LOGIN;
   }
 
@@ -42,7 +42,7 @@ class Stub implements \MLFW\IAuth {
   }
 
   public function getUser():object {
-    $user = new stdClass;
+    $user = new \stdClass;
     $user->login = $this->getUserLogin();
     $user->id = $this->getUserID();
     $user->password = '*';

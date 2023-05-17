@@ -39,7 +39,7 @@ const NOTIFIER_BLOCKED = -254;
 
 interface IAuth {
   public function __construct(array $params=[]);
-  public function impersonate(string $login, string $scope, bool $permanent=true):bool;
+  public function impersonate(string $login, string $scope, int|bool|null $lifetime=null):bool;
   public function checkAccess(string $action):bool;
   public function getUserLogin():string;
   public function getUserID():int;
