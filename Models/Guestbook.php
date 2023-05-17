@@ -8,7 +8,7 @@ use MLFW\ExceptionWrongData;
 class Guestbook extends \MLFW\Models\Entity {
   public function __construct() {
     parent::__construct();
-    // $this->status=2;
+    $this->status=2;
   }
 
   public static function load(array $conditions=[]):array {
