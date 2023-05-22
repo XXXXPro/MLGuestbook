@@ -11,7 +11,8 @@
     ],
     "minimum-stability": "alpha",
     "require": {
-        "php": ">=7.1"
+        "php": ">=7.1",
+        "psr/log": "^3.0"
     },
     "autoload": {
         "psr-4": {"MLFW\\": "MLFW/", "PCatalog\\": "" }

@@ -11,8 +11,10 @@ namespace MLFW;
 
 require __DIR__."/interfaces.php";
 
-class Application {
+class Application implements \Psr\Log\LoggerAwareInterface {
   private $_params;
+  /** @var \Psr\Log\LoggerInterface */
+  public $log;
   /** @var \PDO */
   public $db;
   /** @var \MLFW\IRouter */
@@ -25,6 +27,8 @@ class Application {
   function __construct($params) {
     $this->_params = $params;
     $default_values = [
+      'logger'=>'MLFW\\Loggers\\Stub',
+      'logger_settings'=>null,
       'router'=>'MLFW\\Routers\\Stub',
       'router_settings'=>null,
       'events'=>'MLFW\\Events\\Basic',
@@ -50,9 +54,11 @@ class Application {
     \ini_set("display_errors",(string)$this->_params['display_errors']);
     // initializing database if needed
     $this->initDB();
+    // creating logger class and setting it via setLogger method to comply PSR-3
+    $this->setLogger(new $this->_params['logger']($this->_params['logger_settings']));
     // creating router class
     $this->router = new $this->_params['router']($this->_params['router_settings']);
-    // creating 
+    // creating events processor
     $this->events = new $this->_params['events']($this->_params['events_settings']);
     // user should be initialized when other components are ready
     $this->initUser();
@@ -98,6 +104,10 @@ class Application {
       if (empty($params['cookie_secure']) && !empty($_SERVER['HTTPS']))  $params['cookie_secure']=true; // if request via https, set "secure" attribute for cookie
       return \session_start($params);
     }
+  }
+
+  public function setLogger(\Psr\Log\LoggerInterface $logger):void {
+    $this->log = $logger;
   }
 
   /** Returns parameter from application configuration. If parameter is not set, returns specified default value.
