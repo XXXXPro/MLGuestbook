@@ -52,10 +52,10 @@ class Application implements \Psr\Log\LoggerAwareInterface {
     // enabling errors display
     \ini_set("error_reporting",(string)$this->_params['error_reporting']);
     \ini_set("display_errors",(string)$this->_params['display_errors']);
+    // creating logger class and setting it via setLogger method to comply PSR-3
+    $this->setLogger(new $this->_params['logger']($this->_params['logger_settings']));    
     // initializing database if needed
     $this->initDB();
-    // creating logger class and setting it via setLogger method to comply PSR-3
-    $this->setLogger(new $this->_params['logger']($this->_params['logger_settings']));
     // creating router class
     $this->router = new $this->_params['router']($this->_params['router_settings']);
     // creating events processor
