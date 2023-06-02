@@ -1,5 +1,6 @@
 config/*
-!config/example.php
+!config/www-dev.sample.php
+!config/www-prod.sample.php
 composer.lock
 www-dev/upload/*
 www-prod/upload/*
