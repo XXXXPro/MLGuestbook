@@ -128,8 +128,8 @@ class Fixed implements \MLFW\IAuth {
       $user = $this->userlist[$login];
     }
     else $user = ['password'=>$this->userlist[$login]]; // if only password string is given, transforming it to hash
-    if (empty($result['id'])) $user['id']=array_search($login,array_keys($this->userlist))+1; // users ids enumeration starts from 1
-    if (empty($result['scope'])) $user['scope'] = $this->default_scope;
+    if (empty($user['id'])) $user['id']=array_search($login,array_keys($this->userlist))+1; // users ids enumeration starts from 1
+    if (empty($user['scope'])) $user['scope'] = $this->default_scope;
     return $user;
   }
 

@@ -93,7 +93,7 @@ class Entity {
     $sql = 'SELECT * FROM entity WHERE 1=1 ';
     // TODO: add conditions checking
     $stmt=app()->db->prepare($sql);
-    $stmt->execute(['id'=>$id,'type'=>$rel_type]);    
+    $stmt->execute(['id'=>$conditions['id'],'type'=>$conditions['rel_type']]);    
     return $stmt->fetchAll(\PDO::FETCH_CLASS, '\\MLFW\\Models\\Entity');
   }
 

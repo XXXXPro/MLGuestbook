@@ -8,7 +8,7 @@
  *  MindLife FrameWork basic layout class (defaults to text/plain )
  *  ================================ **/
 
-namespace MLFW\layouts;
+namespace MLFW\Layouts;
 
 use MLFW\Debug;
 

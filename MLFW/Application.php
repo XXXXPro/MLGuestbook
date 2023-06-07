@@ -104,6 +104,7 @@ class Application implements \Psr\Log\LoggerAwareInterface {
       if (empty($params['cookie_secure']) && !empty($_SERVER['HTTPS']))  $params['cookie_secure']=true; // if request via https, set "secure" attribute for cookie
       return \session_start($params);
     }
+    return false;
   }
 
   public function setLogger(\Psr\Log\LoggerInterface $logger):void {
