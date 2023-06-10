@@ -26,13 +26,14 @@ class Guestbook implements \MLFW\IAction {
       $new_item->extra->email = filter_input(INPUT_POST,'email',FILTER_SANITIZE_EMAIL);
       $new_item->extra->ip = filter_input(INPUT_SERVER,'REMOTE_ADDR',FILTER_VALIDATE_IP,FILTER_FLAG_IPV4|FILTER_FLAG_IPV6);
       $mode = app()->config('guestbook_premoderate_mode',2);
-      $new_item->status = $mode;
+      $new_item->status = $mode; 
       if ($mode==Guestbook::MODERATE_ONLY_LINKS) { // checking for links or phones
         $domains = 'aero|biz|com|edu|gov|info|int|mobi|name|net|org|pro|tel|travel|online|guru|club|ru|su|moscow|eu|ua|com\\.ua|kz|kg|by|uz|ge|az|am|co\\.il|ру|рф'; // TLD domains to recognize
         $text = ' '.$new_item->text.' ';
         if (\preg_match('|https?://|i',$text) ||
           \preg_match("/[a-z\-]\.$domains\W/i",$text) ||
           \preg_match('|\+?\d{1,3}\s*\(?\d{3,5}\)?\s*\d{1,3}[—–\-\s]*\d{2}[—–\-\s]*\d{2}|',$new_item->text)) $new_item->status = 2;
+        else $new_item->status = 0;
       }
       try {
         $new_item->save();
@@ -50,7 +51,7 @@ class Guestbook implements \MLFW\IAction {
       catch (Exception $e) {
         $l->putText('Ошибка сохранения: '.$e->getMessage());
       }
-      throw new \MLFW\Redirect("./",303);
+      // throw new \MLFW\Redirect("./",303);
     }
     $l->form = new \PCatalog\Templates\GuestbookForm;
     $messages = \PCatalog\Models\Guestbook::load();
