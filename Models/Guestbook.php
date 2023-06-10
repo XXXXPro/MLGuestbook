@@ -4,11 +4,23 @@ namespace PCatalog\Models;
 
 use MLFW\ExceptionConfig;
 use MLFW\ExceptionWrongData;
+use MLFW\Models\Entity;
+use function MLFW\_dbg;
 
 class Guestbook extends \MLFW\Models\Entity {
+  public $status = 0;
+  public $owner = null;
+  public $text;
+  public $email;
+
   public function __construct() {
     parent::__construct();
     $this->status=2;
+  }
+
+  public static function getById(int|string $id): Entity {
+    // TODO: load object
+    return new Guestbook();
   }
 
   public static function load(array $conditions=[]):array {
@@ -24,8 +36,9 @@ class Guestbook extends \MLFW\Models\Entity {
     return $result;
   }
 
-  public function save() {
+  public function save():bool {
     if ($this->status==2) $dirname = __DIR__.'/../data/guestbook/premod/';
+    elseif ($this->status==3) $dirname = __DIR__ . '/../data/guestbook/trash/';
     else $dirname = __DIR__.'/../data/guestbook/';
     if (!\is_writable($dirname)) throw new ExceptionConfig('Data directory is not writable!'); // TODO: add logging
     $seconds = \time()-\strtotime('today');
@@ -36,14 +49,31 @@ class Guestbook extends \MLFW\Models\Entity {
     while (!$fh) {
       $try++;
       $seconds++;
-      $fh = @fopen($fullname.$seconds.'.txt','x');
+      $fh = @fopen($fullname.$seconds.'.json','x');
       if ($try>255) throw new ExceptionWrongData();
     }    
     if ($fh) {
       if (empty($this->id)) $this->id = $try==0 ? $filename : $filename.'_'.$try;
       fputs($fh,serialize($this));
       fclose($fh);
+      return true;
     } 
+    return false;
+  }
+
+  public function delete():bool {
+    $this->status = 3; // Object with status 1 is marked for deletion
+    return $this->save();
+  }
+
+  public static function purge(): int {
+    $dirname = __DIR__ . '/../data/guestbook/trash/';
+    $trash = \glob($dirname.'*.json');
+    $counter = 0;
+    foreach ($trash as $file) {
+      if (\unlink($file)) $counter++;
+    }
+    return $counter;
   }
 
   public function validate():array {
