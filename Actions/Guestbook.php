@@ -51,7 +51,7 @@ class Guestbook implements \MLFW\IAction {
       catch (Exception $e) {
         $l->putText('Ошибка сохранения: '.$e->getMessage());
       }
-      // throw new \MLFW\Redirect("./",303);
+      throw new \MLFW\Redirect("./",303);
     }
     $l->form = new \PCatalog\Templates\GuestbookForm;
     $messages = \PCatalog\Models\Guestbook::load();
