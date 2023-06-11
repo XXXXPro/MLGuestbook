@@ -7,11 +7,13 @@
  *  MindLife FrameWork basic template class
  *  ================================ **/
 
- namespace MLFW;
+namespace MLFW;
 
- abstract class Template {
+use Stringable;
+
+abstract class Template implements \IteratorAggregate {
   protected $data;
-  protected $subitems = [];
+  protected array $subitems;
   public function __construct(object $obj=null) {
     $this->data = $obj; 
   }
@@ -80,12 +82,16 @@
   }
 
   protected function attrEscape(string $str):string {
-    return htmlspecialchars($str,ENT_QUOTES,app()->config('charset','UTF-8'));
+    return \htmlspecialchars($str,ENT_QUOTES,app()->config('charset','UTF-8'));
   }
 
   protected function escape(string $str):string {
-    return htmlspecialchars($str,ENT_HTML5,app()->config('charset','UTF-8'));
+    return \htmlspecialchars($str,ENT_HTML5,app()->config('charset','UTF-8'));
   }  
+
+  public function getIterator():\Generator {
+    yield from $this->subitems;
+  }
 
   /**  This function should return rendered template (for example, HTML code), which can be included to layout template or send directly to user.
    * Usually it called from __toString function (__toString itself can't be abstract)
@@ -97,4 +103,4 @@
   public function __toString():string {
     return $this->getTemplate();
   }
- }
+}

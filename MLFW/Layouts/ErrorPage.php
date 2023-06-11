@@ -17,9 +17,9 @@ use function \MLFW\app;
 class ErrorPage extends HTML {
   public function getBody():string {
     $result='<h1><span>'.http_response_code().' Error</span></h1>';
-    foreach ($this->subitems as $subitem) {
+    foreach ($this as $subitem) {
       $result.=(string)$subitem.PHP_EOL;
-    }    
+    }
     return $result;
   }
 }

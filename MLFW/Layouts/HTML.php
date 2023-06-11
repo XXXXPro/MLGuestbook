@@ -127,7 +127,7 @@ EOL;
 
   public function getBody():string {
     $result='';
-    foreach ($this->subitems as $subitem) {
+    foreach ($this as $subitem) {
       $result.=(string)$subitem.PHP_EOL;
     }
     return $result;

@@ -24,6 +24,12 @@ class Basic extends \MLFW\Template {
     header_register_callback([$this,'headersOutput']);
   }
 
+  // Empty method just to make all layouts compatible with HTML layout 
+  public function setTitle(string $title): void {}
+
+  // Empty method just to make all layouts compatible with HTML layout 
+  public function setDescription(string $description): void {}  
+
   public function setMime($mime):void {
     $this->mime = $mime;
   }
@@ -51,7 +57,7 @@ class Basic extends \MLFW\Template {
 
   public function getTemplate(): string {
     $result = '';
-    foreach ($this->subitems as $obj) $result.=$obj;
+    foreach ($this as $obj) $result.=(string)$obj;
     if (app()->config('debug',false) && !Debug::isEmpty()) $result.=PHP_EOL.PHP_EOL.'DEBUG INFO: '.PHP_EOL.Debug::output();
     return $result;
   }
