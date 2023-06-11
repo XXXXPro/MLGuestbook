@@ -32,10 +32,9 @@ class Guestbook implements \MLFW\IAction {
         $domains = 'aero|biz|com|edu|gov|info|int|mobi|name|net|org|pro|tel|travel|online|guru|club|ru|su|moscow|eu|ua|com\\.ua|kz|kg|by|uz|ge|az|am|co\\.il|ру|рф'; // TLD domains to recognize
         $text = ' '.$new_item->text.' ';
         if (\preg_match('|https?://|i',$text) ||
-          \preg_match("/[a-z\-]\.$domains\W/i",$text) ||
+          \preg_match("/[a-z\-]\.($domains)\W/i",$text) ||
           \preg_match('|\+?\d{1,3}\s*\(?\d{3,5}\)?\s*\d{1,3}[—–\-\s]*\d{2}[—–\-\s]*\d{2}|',$new_item->text)) $new_item->status = 2;
         else $new_item->status = 0;
-        _dbg('Status',$new_item->status);
       }
       try {
         $new_item->save();
@@ -53,7 +52,7 @@ class Guestbook implements \MLFW\IAction {
       catch (Exception $e) {
         $flash->error('Ошибка сохранения: '.$e->getMessage());
       }
-      //throw new \MLFW\Redirect("./",303);
+      throw new \MLFW\Redirect("./",303);
     }
     $l->form = new \PCatalog\Templates\GuestbookForm;
     $messages = \PCatalog\Models\Guestbook::load();
