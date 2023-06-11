@@ -4,7 +4,6 @@ namespace PCatalog\Actions;
 
 use Exception;
 use PCatalog\Models\Guestbook as ModelGuestbook;
-use \MLFW\Helpers;
 use stdClass;
 
 use function \MLFW\app, \MLFW\_dbg;
@@ -17,6 +16,8 @@ class Guestbook implements \MLFW\IAction {
   public function exec($params=null):\MLFW\Layouts\Basic {
     $l =  new \PCatalog\Layouts\Guestbook;
     $l->addLink('stylesheet','./www-dev/s/surface.css');
+    $flash = new \MLFW\Flash();
+    $l->put($flash);
 
     if (\MLFW\Helpers\HTTP::isPost()) {
       $new_item = new ModelGuestbook;
@@ -34,11 +35,12 @@ class Guestbook implements \MLFW\IAction {
           \preg_match("/[a-z\-]\.$domains\W/i",$text) ||
           \preg_match('|\+?\d{1,3}\s*\(?\d{3,5}\)?\s*\d{1,3}[—–\-\s]*\d{2}[—–\-\s]*\d{2}|',$new_item->text)) $new_item->status = 2;
         else $new_item->status = 0;
+        _dbg('Status',$new_item->status);
       }
       try {
         $new_item->save();
-        if ($new_item->status==2) $l->putText('Ваше сообщение поставлено на премодерацию!');
-        else $l->putText('Ваше сообщение отправлено!');
+        if ($new_item->status==2) $flash->info('Ваше сообщение поставлено на премодерацию!');
+        else $flash->success('Ваше сообщение отправлено!');
         $notifications = app()->config('guestbook_notifications',[]);
         if (!empty($notifications)) {
           $notify_sender = new \MLFW\Notification;
@@ -49,9 +51,9 @@ class Guestbook implements \MLFW\IAction {
         app()->events->trigger("newpost",$new_item);
       }
       catch (Exception $e) {
-        $l->putText('Ошибка сохранения: '.$e->getMessage());
+        $flash->error('Ошибка сохранения: '.$e->getMessage());
       }
-      throw new \MLFW\Redirect("./",303);
+      //throw new \MLFW\Redirect("./",303);
     }
     $l->form = new \PCatalog\Templates\GuestbookForm;
     $messages = \PCatalog\Models\Guestbook::load();
