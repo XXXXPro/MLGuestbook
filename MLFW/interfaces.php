@@ -20,12 +20,8 @@ interface IAction {
   public function exec($params):Layouts\Basic;
 }
 
-interface IEventProcessor {
-  public function trigger(string $name, object $event_data):void;  
-}
-
 interface IEventHandler {
-  public static function handleEvent(string $name, object $event):void;
+  public static function handleEvent(Event $event):void;
 }
 
 interface INotifier {
@@ -62,5 +58,4 @@ class Exception405 extends ExceptionHTTPCode {}
 class Exception410 extends ExceptionHTTPCode {}
 class ExceptionBanned extends ExceptionHTTPCode {}
 class ExceptionWrongData extends \Exception {}
-class EventStopPropagation extends \Exception {}
 class ExceptionClassNotFound extends \Exception {}

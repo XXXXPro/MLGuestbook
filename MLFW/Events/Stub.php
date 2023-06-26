@@ -9,17 +9,14 @@
 
 namespace MLFW\Events;
 
-use Exception;
-use MLFW\IEventHandler, MLFW\IEventProcessor;
-
 use function MLFW\_dbg;
 
-class Stub implements IEventProcessor {
+class Stub implements \Psr\EventDispatcher\EventDispatcherInterface {
   public function __construct($params) {
   }
  
   /** Really this class do nothing */
-  public function trigger(string $name, object $event_data): void {
-  }
+  public function dispatch(object $event) {
     
+  }
 }

@@ -9,12 +9,9 @@
 
 namespace MLFW\Events;
 
-use Exception;
-use MLFW\IEventHandler, MLFW\IEventProcessor;
-
 use function MLFW\_dbg;
 
-class Basic implements \MLFW\IEventProcessor {
+class Basic implements \Psr\EventDispatcher\EventDispatcherInterface, \Psr\EventDispatcher\ListenerProviderInterface {
   private $params;
   private $default_namespace='';
 
@@ -23,7 +20,8 @@ class Basic implements \MLFW\IEventProcessor {
     $this->params = $params;
   }
 
-  protected function getHandlers(string $event_name) {
+  public function getListenersForEvent(object $event): iterable {
+    $event_name = $event->getName();
     $events_dir = $this->params['events_dir'] ?? __DIR__.'/../../events'; 
     if (!preg_match('|^\w+$|',$event_name)) throw new \MLFW\ExceptionSecurity(\sprintf("Wrong event name: %s!",$event_name));
     $filelist = glob($events_dir.'/'.$event_name.'/*.txt');
@@ -35,19 +33,18 @@ class Basic implements \MLFW\IEventProcessor {
   }
 
   /** Passes event to all registered handlers. 
-   * 
+   * @param \MLFW\Event $event Objet, contating event name and data
    */
-  public function trigger(string $name, object $event_data):void {
-    $handlers = $this->getHandlers($name);
+  public function dispatch(object $event) {
+    $name = $event->getName();
+    $handlers = $this->getListenersForEvent($event);
     $handlers = str_replace('\\\\','\\',$handlers); // to avoid programer mistakes, caused by \\ in common text files
     foreach ($handlers as $handler) {
       try {
         if (strpos($handler,'\\')===false && $this->default_namespace!=='') $result=$this->default_namespace.'\\'.$handler;        
-        if (class_exists($handler) && !empty(class_implements($handler)['MLFW\IEventHandler'])) $handler::handleEvent($name,$event_data); 
+        if (class_exists($handler) && !empty(class_implements($handler)['MLFW\IEventHandler'])) $handler::handleEvent($event); 
         else _dbg(\sprintf("Event \"%s\", handler class %s not found or not implementing IEventHandler interface, skipping!",$name,$handler));
-      }
-      catch (\MLFW\EventStopPropagation $e) { // if event handler wants to stop futher event propagation, it should throw this Exception
-        break;
+        if ($event->isPropagationStopped()) break; // if propagation stopped, exiting event processing loop
       }
       catch (\MLFW\ExceptionHTTPCode $e) { // if handler throw any of status exception (Exception404, Exception403 and so on), rethrow it to process in main application class
         throw $e;
