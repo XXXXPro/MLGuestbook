@@ -71,10 +71,9 @@ class DbEntity extends ModelsEntity {
     return $stmt->fetchAll(\PDO::FETCH_CLASS, '\\MLFW\\Models\\DbEntity');
   }
 
-  static function extractId($obj) {
+  static function extractId(int|DbEntity $obj) {
     if ($obj instanceof self) return $obj->id;
     if (is_numeric($obj)) return intval($obj);
-    throw new \MLFW\ExceptionSecurity("Wrong object passed!");
   }
 
   public static function load(array $conditions=[]):array {
