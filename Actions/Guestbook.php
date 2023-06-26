@@ -47,7 +47,7 @@ class Guestbook implements \MLFW\IAction {
             $notify_sender->send($notifier,$receiver,"<b>".$new_item->owner."</b> пишет:\r\n".$new_item->text,'Новое сообщение в гостевой книге');
           }
         }
-        app()->events->trigger("newpost",$new_item);
+        app()->events->dispatch(new \MLFW\Event("newpost",$new_item));
       }
       catch (Exception $e) {
         $flash->error('Ошибка сохранения: '.$e->getMessage());
