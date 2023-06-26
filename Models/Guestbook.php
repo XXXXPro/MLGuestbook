@@ -2,7 +2,7 @@
 
 namespace PCatalog\Models;
 
-use MLFW\ExceptionConfig;
+use MLFW\ExceptionMisconfig;
 use MLFW\ExceptionWrongData;
 use MLFW\Models\Entity;
 use function MLFW\_dbg;
@@ -40,7 +40,7 @@ class Guestbook extends \MLFW\Models\Entity {
     if ($this->status==2) $dirname = __DIR__.'/../data/guestbook/premod/';
     elseif ($this->status==3) $dirname = __DIR__ . '/../data/guestbook/trash/';
     else $dirname = __DIR__.'/../data/guestbook/';
-    if (!\is_writable($dirname)) throw new ExceptionConfig('Data directory is not writable!'); // TODO: add logging
+    if (!\is_writable($dirname)) throw new ExceptionMisconfig('Data directory is not writable!'); // TODO: add logging
     $seconds = \time()-\strtotime('today');
     $filename = date('Y-m-d_');
     $try=0;    

@@ -124,7 +124,7 @@ class Fixed implements \MLFW\IAuth {
   function getUserFromList($login) {
     if (empty($this->userlist[$login])) return null;
     if (is_array($this->userlist[$login])) { 
-      if (empty($this->userlist[$login]['password'])) throw new \MLFW\ExceptionConfig(sprintf('User %s has no password set.',$login));
+      if (empty($this->userlist[$login]['password'])) throw new \MLFW\ExceptionMisconfig(sprintf('User %s has no password set.',$login));
       $user = $this->userlist[$login];
     }
     else $user = ['password'=>$this->userlist[$login]]; // if only password string is given, transforming it to hash

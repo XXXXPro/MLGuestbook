@@ -86,7 +86,7 @@ class Application implements \Psr\Log\LoggerAwareInterface {
   }
 
   /** Starts PHP session. If session is already started, does nothing. 
-   * If sessions are disabled in PHP configuration, throws ExceptionConfig. 
+   * If sessions are disabled in PHP configuration, throws ExceptionMisconfig. 
    * For security reasons parameter cookie_httponly is always set.
    *  @param bool $only_if_exists — Start session only if it has already created in previous requests and it's ID is passed via $_COOKIES, $_GET or $_POST.
    *  @param array $params — Parameters to be passed to session_start function.  
@@ -97,7 +97,7 @@ class Application implements \Psr\Log\LoggerAwareInterface {
     if ($only_if_exists && empty($_COOKIE[$sess_name]) && empty($_GET[$sess_name]) && empty($_POST[$sess_name])) return false; // if no session ID present,  
     \session_name($sess_name);    
     $status = \session_status();
-    if ($status === \PHP_SESSION_DISABLED) throw new ExceptionConfig('Sessions are disabled in PHP settings');
+    if ($status === \PHP_SESSION_DISABLED) throw new ExceptionMisconfig('Sessions are disabled in PHP settings');
     elseif ($status === \PHP_SESSION_NONE) { 
       if (empty($params['cookie_httponly'])) $params['cookie_httponly']=1;
       if (empty($params['cookie_samesite'])) $params['cookie_samesite']='Lax';
@@ -142,16 +142,37 @@ class Application implements \Psr\Log\LoggerAwareInterface {
       $controller = new $controller_class($controller_params);
       $result = $controller->exec(null);
       print $result;
+    } 
+    catch (ExceptionAlert $e) {
+      if (is_object($this->events)) $this->events->dispatch(new Event('MLFW_alert', ['exception' => $e]));
+      if (is_object($this->log)) $this->log->alert(print_r($e, true)); // 
+      $this->showError(500, 'Configuration error: ' . $e->getMessage(), $e);
     }
-    catch (ExceptionConfig $e) {
+    catch (ExceptionMisconfig $e) {
+      if (is_object($this->events)) $this->events->dispatch(new Event('MLFW_error_config',['exception'=>$e]));
+      if (is_object($this->log)) $this->log->critical(print_r($e,true)); // 
       $this->showError(500,'Configuration error: '.$e->getMessage(),$e);
     }
-    catch (ExceptionSecurity $e) {    
+    catch (ExceptionSecurity $e) {
+      if (is_object($this->events)) $this->events->dispatch(new Event('MLFW_error_security', ['exception' => $e]));
+      if (is_object($this->log)) $this->log->error(print_r($e, true));  // security exception should be treated as common errors:
       $this->showError(500,'Security error: '.$e->getMessage(),$e);
-    }
+    } 
+    catch (Exception403 $e) {
+      // Just in case let's add event dispatching for 403 error
+      if (is_object($this->events)) $this->events->dispatch(new Event('MLFW_error_403', ['exception' => $e])); 
+      $this->showError(403, $e->getMessage(), $e);
+    }    
     catch (Exception404 $e) {
+      // Just in case let's add event dispatching for 404 error
+      if (is_object($this->events)) $this->events->dispatch(new Event('MLFW_error_404', ['exception' => $e])); 
       $this->showError(404,$e->getMessage(),$e);
-    }
+    } 
+    catch (Exception410 $e) {
+      // Just in case let's add event dispatching for 410 error
+      if (is_object($this->events)) $this->events->dispatch(new Event('MLFW_error_410', ['exception' => $e])); 
+      $this->showError(410, $e->getMessage(), $e);
+    }    
     catch (Exception405 $e) {
       $allow = $e->methods;
       header('Allow: '.$allow);
@@ -162,9 +183,13 @@ class Application implements \Psr\Log\LoggerAwareInterface {
       header('Location: '.$e->location);
     }
     catch (\PDOException $e) {
+      // No event triggering, only logging the problem
+      if (is_object($this->log)) $this->log->error(print_r($e, true));      
       $this->showError(503,$e->getMessage(),$e);
     }    
     catch (\Exception $e) {
+      if (is_object($this->events)) $this->events->dispatch(new Event('MLFW_error_common', ['exception' => $e]));
+      if (is_object($this->log)) $this->log->error(print_r($e, true));  
       $this->showError(500,'General error: '.$e->getMessage(),$e);
     }
   }

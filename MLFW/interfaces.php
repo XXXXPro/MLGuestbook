@@ -49,7 +49,8 @@ interface IAuth {
 const USER_GUEST_LOGIN = 'Guest';
 const USER_GUEST_ID = 0;
 
-class ExceptionConfig extends \Exception {}
+class ExceptionAlert extends \Exception {}
+class ExceptionMisconfig extends \Exception {}
 class ExceptionSecurity extends \Exception {}
 class ExceptionHTTPCode extends \Exception {}
 class Exception403 extends ExceptionHTTPCode {}

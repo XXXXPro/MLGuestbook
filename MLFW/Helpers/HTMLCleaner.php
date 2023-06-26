@@ -60,7 +60,7 @@ class HTMLCleaner {
     $charset = app()->config('charset','UTF-8');
     $html = \strip_tags($html,'<'.\join('><',\array_keys($tags)).'>'); // at first clean tags except allowed
     $html = \mb_encode_numericentity($html, [0x80, 0x10FFFF, 0, ~0], $charset);
-    if (!\class_exists('\\DOMDocument')) throw new \MLFW\ExceptionConfig('DOM extension not loaded!');
+    if (!\class_exists('\\DOMDocument')) throw new \MLFW\ExceptionMisconfig('DOM extension not loaded!');
     $dom = new \DOMDocument();
     $dom->formatOutput = false;
     $dom->loadHTML($html);

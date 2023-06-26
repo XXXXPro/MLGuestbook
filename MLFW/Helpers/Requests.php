@@ -25,7 +25,7 @@ class Requests {
       \curl_setopt_array($this->ch,$opts);
     }
     // TODO: add using of fopen if fopen.allow_url enabled
-    else throw new \MLFW\ExceptionConfig('Curl extension is not loaded!');    
+    else throw new \MLFW\ExceptionMisconfig('Curl extension is not loaded!');    
   }
 
   public function __destruct() {
