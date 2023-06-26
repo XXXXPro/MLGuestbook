@@ -71,7 +71,7 @@ class DbEntity extends ModelsEntity {
     return $stmt->fetchAll(\PDO::FETCH_CLASS, '\\MLFW\\Models\\DbEntity');
   }
 
-  static function extractId(int|DbEntity $obj) {
+  static function extractId(int|DbEntity $obj):int|null {
     if ($obj instanceof self) return $obj->id;
     if (is_numeric($obj)) return intval($obj);
   }
