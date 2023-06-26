@@ -57,7 +57,7 @@ class DbEntity extends ModelsEntity {
     $sql = 'SELECT '.$columns.' FROM entity e, entity_relation er WHERE er.rel_from=:id AND e.id=er.rel_to AND rel_type=:type';
     $stmt=app()->db->prepare($sql);
     $stmt->execute(['id'=>$id,'type'=>$rel_type]);
-    return $stmt->fetchAll(\PDO::FETCH_CLASS, '\\MLFW\\Models\\Entity');
+    return $stmt->fetchAll(\PDO::FETCH_CLASS, '\\MLFW\\Models\\DbEntity');
   }
 
   static function getRelatedReverse(int $id, int $rel_type,bool $texts=false,bool $extra=false) {
@@ -68,7 +68,7 @@ class DbEntity extends ModelsEntity {
     $sql = 'SELECT '.$columns.' FROM entity e, entity_relation er WHERE er.rel_to=:id AND e.id=er.rel_from AND rel_type=:type';
     $stmt=app()->db->prepare($sql);
     $stmt->execute(['id'=>$id,'type'=>$rel_type]);
-    return $stmt->fetchAll(\PDO::FETCH_CLASS, '\\MLFW\\Models\\Entity');
+    return $stmt->fetchAll(\PDO::FETCH_CLASS, '\\MLFW\\Models\\DbEntity');
   }
 
   static function extractId($obj) {
@@ -82,7 +82,7 @@ class DbEntity extends ModelsEntity {
     // TODO: add conditions checking
     $stmt=app()->db->prepare($sql);
     $stmt->execute(['id'=>$conditions['id'],'type'=>$conditions['rel_type']]);    
-    return $stmt->fetchAll(\PDO::FETCH_CLASS, '\\MLFW\\Models\\Entity');
+    return $stmt->fetchAll(\PDO::FETCH_CLASS, '\\MLFW\\Models\\DbEntity');
   }
 
   function save():bool {
