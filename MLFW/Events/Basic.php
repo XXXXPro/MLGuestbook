@@ -57,5 +57,6 @@ class Basic implements \Psr\EventDispatcher\EventDispatcherInterface, \Psr\Event
         _dbg(\sprintf("Exception: %s for event %s in handler %s",$e->getMessage(),$name,$handler));
       }
     }
+    return $event;
   }
 }

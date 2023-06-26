@@ -12,6 +12,8 @@
 
 namespace MLFW\Routers;
 
+use stdClass;
+
 class Basic implements \MLFW\IRouter {
   private $params;
   private $default_namespace='';
@@ -30,6 +32,7 @@ class Basic implements \MLFW\IRouter {
       if (is_file($filename) && is_readable($filename)) {
         $data = json_decode(file_get_contents($filename),false);
         if (is_array($data)) {
+          /** @var stdClass $route */
           foreach ($data as $route) {
             if (empty($route->action)) \MLFW\_dbg(sprintf('No routing action in route %s!',print_r($route,true)));
             elseif (empty($route->rule)) \MLFW\_dbg(sprintf('No routing pattern in route %s!',print_r($route,true)));

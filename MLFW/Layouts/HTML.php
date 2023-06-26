@@ -23,7 +23,7 @@ class HTML extends Basic {
   protected $style_code = '';
   protected $flash_messages = [];
 
-  function __construct(\MLFW\Models\Entity $obj=null) {
+  function __construct(\MLFW\Models\DbEntity $obj=null) {
     parent::__construct();
     if ($obj!==null) $this->setData($obj);
     if (empty($this->title)) $this->title = app()->config('site_title','');
@@ -38,7 +38,7 @@ class HTML extends Basic {
     $this->meta['description']=$description;
   }
 
-  public function setData(\MLFW\Models\Entity $obj):void {
+  public function setData(\MLFW\Models\DbEntity $obj):void {
     if (!empty($obj->seo_title)) $this->title=$obj->seo_title;
     elseif (!empty($obj->title)) $this->title-$obj->title;
     if (!empty($obj->seo_descr)) $this->title=$obj->seo_descr;

@@ -136,6 +136,7 @@ class DbEntity extends ModelsEntity {
       $stmt = app()->db->prepare($sql);
       return $stmt->execute(['id'=>$this->id]);
     }
+    else return true;
   }
 
   public static function purge(): int {

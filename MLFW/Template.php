@@ -8,8 +8,7 @@
  *  ================================ **/
 
 namespace MLFW;
-
-use Stringable;
+use Stringable,Generator;
 
 abstract class Template implements \IteratorAggregate {
   protected $data;
@@ -18,13 +17,12 @@ abstract class Template implements \IteratorAggregate {
     $this->data = $obj; 
   }
 
-  /** Adds object . 
+  /** Adds object to objects list in the template. 
   * Template must inherit MLFW\Template class object.
-  * @param object $obj Object to wrap with template
-  * @param string $wrapper Wrapper class name
+  * @param Stringable $obj Object to wrap with template
   **/
-  public function put(Template $obj):void {
-    $this->subitems[]=$obj->__toString();
+  public function put(Stringable $obj):void {
+    $this->subitems[]=$obj;
   }
 
   /** Adds text string to template 
@@ -41,6 +39,7 @@ abstract class Template implements \IteratorAggregate {
    **/
   public function wrap(object $obj, string $wrapper):void {
     if (\class_exists($wrapper) && \is_subclass_of($wrapper,'\\MLFW\\Template',true)) { // Allow only Template subclasses for security reasons
+      /** @var \Stringable $tmpl */
       $tmpl = new $wrapper($obj);
       $this->put($tmpl);
     }
@@ -89,7 +88,7 @@ abstract class Template implements \IteratorAggregate {
     return \htmlspecialchars($str,ENT_HTML5,app()->config('charset','UTF-8'));
   }  
 
-  public function getIterator():\Generator {
+  public function getIterator():Generator {
     yield from $this->subitems;
   }
 

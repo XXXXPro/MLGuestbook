@@ -19,7 +19,7 @@ class Application implements \Psr\Log\LoggerAwareInterface {
   public $db;
   /** @var \MLFW\IRouter */
   public $router;
-  /** @var \PSR\EventDispatcher\EventDispatcherInterface */
+  /** @var \Psr\EventDispatcher\EventDispatcherInterface */
   public $events;
   /** @var \MLFW\IAuth */
   public $auth;

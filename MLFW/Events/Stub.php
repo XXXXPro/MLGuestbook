@@ -17,6 +17,6 @@ class Stub implements \Psr\EventDispatcher\EventDispatcherInterface {
  
   /** Really this class do nothing */
   public function dispatch(object $event) {
-    
+    return $event;
   }
 }

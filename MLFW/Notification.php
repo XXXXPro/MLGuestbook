@@ -20,8 +20,8 @@ class Notification {
    * If provider class is
    * @param string $name Name of notification provider class (like Email, Telegram and so on)
    * @param string $receiver Provider-specific ID of receiver (Email addresss, Telegram chat id, VK id and so on)
-   * @param string $mssage Text of notification message to send. Can contain HTML markup if provider suports it.
-   * @param mixed $files Attached files if neeed
+   * @param string $message Text of notification message to send. Can contain HTML markup if provider suports it.
+   * @param array $files Attached files if neeed
    * @param mixed $extra Provider-specific extra message data
    * @return int Zero if sending was successful, -1 if notification provider not found or any non-zero provider-specific error code
    * 
