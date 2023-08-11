@@ -36,6 +36,7 @@ class Application implements \Psr\Log\LoggerAwareInterface {
       'auth'=>'MLFW\\Auth\\Stub',
       'auth_settings'=>null,
       'ob_handler'=>null,
+      'force_https'=>false,
       'error_reporting'=>0,
       'display_errors'=>0,
       'debug'=>0,

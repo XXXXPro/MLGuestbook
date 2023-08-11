@@ -8,7 +8,9 @@ $site_config = [
   /* This value will be passed to ini_set PHP function. */
   'display_errors'=>1, 
   /* Debugging mode. If enabled, the output of _dbg function will be shown directly on generated page if layout class supports this. */
-  'debug'=>1, 
+  'debug'=>1,
+  /* Always create site links with https:// prefix whether $_SERVER['HTTPS'] is set or not. */
+  'force_https' => false,
 
   /* Logger class name. 
   Use MLFW\\Loggers\\TSVLog for default logger 
@@ -62,14 +64,16 @@ $site_config = [
   ],
 
   /* Site name. Used in default title tag, site header and so on */
-  'site_title'=>'Гостевая книга сайта XXXXPro.Ru',
-  /* Session name. */
+  'site_title' => 'Mindlife Guestbook',
+  /* Site description to use in description meta-tag, subheader and so on. */
+  'site_descr' => 'Guestbooks are part of old good Internet',
+  /* Session name. */  /* Session name. */
   'session_name'=>'MLFW_sid',
 
   /*=======================================================
   MLGuestbook-specific settings: */
   /* Notification receivers list in format receiver=>notificator */
-  'guestbook_notifications'=>['286031258'=>'Telegram'/*,'Mobile'=>'Simplepush'*/],  
+  'guestbook_notifications'=>[/*'286031258'=>'Telegram','Mobile'=>'Simplepush'*/],  
   /* Premoderation mode: 0 — no premoderation, 1 — only if domain names or phones found, 2 — always premoderate */
   'guestbook_premoderate_mode'=>1
 ];
