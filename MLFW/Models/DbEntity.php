@@ -36,7 +36,7 @@ class DbEntity extends ModelsEntity {
     $sql = 'SELECT e.* FROM entity e WHERE url=:url';
     $stmt=app()->db->prepare($sql);
     $stmt->execute(['url'=>$url]);
-    $stmt->setFetchMode(\PDO::FETCH_CLASS, '\\MLFW\\Models\\Entity');
+    $stmt->setFetchMode(\PDO::FETCH_CLASS, '\\MLFW\\Models\\DbEntity');
     $result = $stmt->fetch(\PDO::FETCH_CLASS);
     return $result;
   }
