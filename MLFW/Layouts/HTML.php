@@ -110,9 +110,10 @@ class HTML extends Basic {
     if (!empty($this->style_code)) $style='<style>'.PHP_EOL.$this->style_code.'</style>';
     $script='';
     if (!empty($this->head_script_code)) $script='<script>'.PHP_EOL.$this->head_script_code.'</script>';
+    $lang = app()->getLanguage();
     return <<<EOL
 <!DOCTYPE html>
-<html>
+<html lang="$lang">
   <head>
     <meta charset="{$this->attrEscape($this->charset)}">
     <title>{$this->escape($this->title)}</title>

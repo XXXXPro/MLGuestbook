@@ -24,12 +24,6 @@ class Basic extends \MLFW\Template {
     header_register_callback([$this,'headersOutput']);
   }
 
-  // Empty method just to make all layouts compatible with HTML layout 
-  public function setTitle(string $title): void {}
-
-  // Empty method just to make all layouts compatible with HTML layout 
-  public function setDescription(string $description): void {}  
-
   public function setMime($mime):void {
     $this->mime = $mime;
   }
