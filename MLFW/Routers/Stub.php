@@ -26,9 +26,9 @@ class Stub implements \MLFW\IRouter {
     return $base_url;
   }
 
-  public function fullUrl($name, $params): string {
+  public function fullUrl($name, $params=[]): string {
     $route = $this->route($name, $params);
-    $protocol = !empty($_SERVER['HTTPS']) || app()->config('force_https', false) ? "https" : "http";
+    $protocol = !empty($_SERVER['HTTPS']) || \MLFW\app()->config('force_https', false) ? "https" : "http";
     $host = $_SERVER['HTTP_HOST'];
     return $protocol . '://' . $host . $route;
   }
