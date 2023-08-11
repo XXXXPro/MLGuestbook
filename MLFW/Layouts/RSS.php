@@ -23,7 +23,7 @@ class RSS extends HTML {
   /** Passes root object to parent constructor to set metadata and sets the MIME type for RSS. */
   function __construct(\MLFW\Models\Entity $obj = null) {
     parent::__construct($obj);
-    $this->setMime('application/rss+xml');
+    $this->setMime('application/xml');
   }
 
 /** Iterates all subitems of specified object recursively if they are iterable.
@@ -51,7 +51,7 @@ class RSS extends HTML {
         //create "description" node under "item"
         $description_node = $item_node->appendChild($this->xml->createElement("description"));
         //fill description node with CDATA content
-        $description_contents = $this->xml->createCDATASection(htmlentities($item->text));
+        $description_contents = $this->xml->createCDATASection($item->text);
         $description_node->appendChild($description_contents);
 
         //Published date
