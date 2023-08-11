@@ -194,6 +194,12 @@ class Application implements \Psr\Log\LoggerAwareInterface {
     }
   }
 
+  /** Return language code currently used in application.
+   *  By default just returns 'language' setting in configuration. */
+  function getLanguage():string {
+    return $this->config('language','en-us');
+  }
+
   function showError(int $code,string $text,\Exception $e=null) {
     http_response_code($code);    
     if (class_exists('Layouts\\ErrorPage')) {
