@@ -63,7 +63,7 @@ class HTMLCleaner {
     if (!\class_exists('\\DOMDocument')) throw new \MLFW\ExceptionMisconfig('DOM extension not loaded!');
     $dom = new \DOMDocument();
     $dom->formatOutput = false;
-    $dom->loadHTML($html);
+    $dom->loadHTML($html, LIBXML_NONET|LIBXML_HTML_NOIMPLIED|LIBXML_HTML_NODEFDTD); // LIBXML_NONET — for protection against XXE, LIBXML_HTML_NOIMPLIED|LIBXML_HTML_NODEFDTD — to don't add DOCTYPE and html/body tags
     $xpath = new \DOMXPath($dom);      
     $nodes = $xpath->query('//@*'); // finding all tags with attributes
     foreach ($nodes as $node) { 
