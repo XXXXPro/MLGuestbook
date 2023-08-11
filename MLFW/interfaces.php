@@ -13,7 +13,8 @@ namespace MLFW;
 interface IRouter {
   public function __construct($params);
   public function getAction($url):array;
-  public function route($name,$params):string;
+  public function route($name,$params=[]):string;
+  public function fullUrl($name, $params): string;  
 };
 
 interface IAction {

@@ -91,7 +91,8 @@ class Basic implements \MLFW\IRouter {
     else throw new \MLFW\Exception404('No route for this URL!');
   }
 
-  public function route($name,$params):string {
+  public function route($name,$params=[]):string {
+    $base_url = \dirname($_SERVER['PHP_SELF']);
     if ($this->named_rules===null) $this->loadRules();
     $result='';
     if (empty($this->named_rules[$name])) \MLFW\_dbg(sprintf('No route with name %s!',$name));
@@ -100,7 +101,15 @@ class Basic implements \MLFW\IRouter {
       foreach ($params as $key=>$value) {
         $result = str_replace('{'.$key.'}',urlencode($value),$result);
       }
+      $result = $base_url.$result;
     }
     return $result;
+  }
+
+  public function fullUrl($name,$params):string {
+    $route = $this->route($name,$params);
+    $protocol = !empty($_SERVER['HTTPS']) || app()->config('force_https', false) ? "https" : "http";
+    $host = $_SERVER['HTTP_HOST'];
+    return $protocol.'://'.$host.$route;
   }
 }
