@@ -5,8 +5,9 @@ namespace PCatalog\Templates;
 class GuestbookEntry extends \MLFW\Template {
   public function getTemplate(): string {
     $avatar = !empty($this->data->extra->email) ? '<img src="https://www.gravatar.com/avatar/'.md5($this->data->extra->email).'?s=48" class="u-photo" alt="{$this->data->owner}" height="48" width="48" />' : '';
-    $author = !empty($this->data->extra->email) ? '<a href="mailto:'.$this->data->extra->email.'">'.$this->data->owner.'</a>' : $this->data->owner;    
-    $text = nl2br($this->data->text);
+    $author = !empty($this->data->extra->email) ? '<a href="mailto:'.$this->data->extra->email.'">'.$this->data->owner.'</a>' : $this->data->owner;
+    $text = \MLFW\Helpers\HTMLCleaner::clean($this->data->text, ['a' => 'href', 'img' => ['src', 'alt'],'b'=>[],'i'=>[],'del'=>[],'s'=>[],'strong'=>[],'em'=>[]]);
+    $text = nl2br($text);
     $html = <<<EOL
     <div class="h-entry card">
     <div class="h-card">

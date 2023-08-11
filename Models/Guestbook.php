@@ -18,6 +18,16 @@ class Guestbook extends \MLFW\Models\Entity {
     $this->status=2;
   }
 
+  public function __get($name) {
+    if ($name==='title') return $this->owner.': '.$this->firstWords($this->text,5);
+  }
+
+  private function firstWords(string $text, $count = 5): string {
+    $words = explode(" ", $text);
+    return implode(" ", array_slice($words, 0, $count));
+  }
+
+
   public static function getById(int|string $id): Entity {
     // TODO: load object
     return new Guestbook();
@@ -53,7 +63,7 @@ class Guestbook extends \MLFW\Models\Entity {
       if ($try>255) throw new ExceptionWrongData();
     }    
     if ($fh) {
-      if (empty($this->id)) $this->id = $try==0 ? $filename : $filename.'_'.$try;
+      if (empty($this->id)) $this->id = $filename.'_'.$seconds;
       fputs($fh,serialize($this));
       fclose($fh);
       return true;

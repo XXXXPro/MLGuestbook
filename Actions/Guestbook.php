@@ -15,6 +15,10 @@ class Guestbook implements \MLFW\IAction {
 
   public function exec($params=null):\MLFW\Layouts\Basic {
     $l =  new \PCatalog\Layouts\Guestbook;
+    // $l =  new \MLFW\Layouts\RSS();
+    $l->setDescription(app()->config('site_descr'));
+    $l->addLink('canonical',app()->router->fullUrl('guestbook'));
+
     $l->addLink('stylesheet','./www-dev/s/surface.css');
     $flash = new \MLFW\Flash();
     $l->put($flash);
@@ -47,7 +51,7 @@ class Guestbook implements \MLFW\IAction {
             $notify_sender->send($notifier,$receiver,"<b>".$new_item->owner."</b> пишет:\r\n".$new_item->text,'Новое сообщение в гостевой книге');
           }
         }
-        app()->events->dispatch(new \MLFW\Event("newpost",$new_item));
+        app()->events->dispatch(new \MLFW\Event("newpost",['item'=>$new_item]));
       }
       catch (Exception $e) {
         $flash->error('Ошибка сохранения: '.$e->getMessage());
@@ -56,9 +60,6 @@ class Guestbook implements \MLFW\IAction {
     }
     $l->form = new \PCatalog\Templates\GuestbookForm;
     $messages = \PCatalog\Models\Guestbook::load();
-    foreach ($messages as $message) {
-      $message->text = \MLFW\Helpers\HTMLCleaner::clean($message->text,['a'=>'href','img'=>['src','alt']]);
-    }
     $l->wrapAll($messages,'\\PCatalog\\Templates\\GuestbookEntry');
     _dbg(\sprintf('Memory usage: %d bytes, %d full.',memory_get_peak_usage(),memory_get_peak_usage(true)));
 
