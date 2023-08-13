@@ -12,8 +12,8 @@ namespace MLFW;
 use stdClass;
 use Stringable,Generator;
 
-/* Extending stdClass to allow dynamic properties in PHP 8.2 and later */
-abstract class Template extends stdClass implements \IteratorAggregate {
+#[AllowDynamicProperties]
+abstract class Template implements \IteratorAggregate {
   protected $data;
   protected array $subitems;
   public function __construct(object $obj=null) {

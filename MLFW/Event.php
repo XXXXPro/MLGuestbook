@@ -11,7 +11,8 @@
 
 namespace MLFW;
 
-class Event extends \stdClass implements \Psr\EventDispatcher\StoppableEventInterface {
+#[AllowDynamicProperties]
+class Event implements \Psr\EventDispatcher\StoppableEventInterface {
   private bool $stopped = false;
   /** Event name used for event dispatching */
   protected string $MLFW_event_name;
