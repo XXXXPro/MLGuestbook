@@ -12,6 +12,8 @@ namespace MLFW\Auth;
 
 use stdClass;
 
+use function MLFW\_dbg;
+
 use const MLFW\USER_GUEST_ID;
 use const MLFW\USER_GUEST_LOGIN;
 
@@ -64,5 +66,19 @@ class Stub implements \MLFW\IAuth {
 
   public function logout():void {
 
+  }
+
+  public function generateKey(string $str): string {
+    $rand = mt_rand(0,0x7ffffff);
+    $crypt_string = \MLFW\app()->config('secret_string');
+    return $rand.'-'.\hash("sha256",$rand.$crypt_string.$str);
+  }
+
+  public function validateKey(string $str, string $key): bool {
+    if (\strpos($key,'-')===false) return false;
+    list($rand,$crypted)=explode('-',$key,2);
+    $crypt_string = \MLFW\app()->config('secret_string');
+    $right_key=\hash("sha256",$rand.$crypt_string.$str);
+    return $crypted===$right_key;
   }
 }

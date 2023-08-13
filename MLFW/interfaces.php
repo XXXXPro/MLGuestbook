@@ -45,6 +45,8 @@ interface IAuth {
   public function isBanned():bool;
   public function isGuest():bool;
   public function logout():void;
+  public function generateKey(string $str):string;
+  public function validateKey(string $str, string $key):bool;
 }
 
 const USER_GUEST_LOGIN = 'Guest';

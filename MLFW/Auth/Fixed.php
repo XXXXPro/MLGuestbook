@@ -13,7 +13,7 @@
 
 namespace MLFW\Auth;
 
-use function MLFW\app;
+use function MLFW\app, MLFW\_dbg;
 
 class Fixed implements \MLFW\IAuth {  
   protected $userdata;
@@ -54,7 +54,7 @@ class Fixed implements \MLFW\IAuth {
    */
   function impersonate($login,$scope='*',bool|int|null $lifetime=null):bool {
     if (!$login || $login===\MLFW\USER_GUEST_LOGIN) {
-      $newdata = ['login'=>\MLFW\USER_GUEST_LOGIN,'scope'=>$scope,'id'=>\MLFW\USER_GUEST_ID];
+      $newdata = ['login'=>\MLFW\USER_GUEST_LOGIN,'scope'=>$scope,'id'=>\MLFW\USER_GUEST_ID,'password'=>'*'];
       if ($lifetime!==null && isset($_COOKIE[$this->cookie_name])) \setcookie($this->cookie_name,"",1,$this->cookie_domain,$this->cookie_path,false,true);  // will send cookie reset header only if cookie already set. If no cookie was received, no reason to reset it
     }
     else {
@@ -133,17 +133,18 @@ class Fixed implements \MLFW\IAuth {
     return $user;
   }
 
-  /*function getKey(string $action,Content $object=null,string $user=null) {
-    if (empty($user)) $user=$this->userdata->login;
-    $oid = empty($object) ? '' : $object->_oid;
-    $random = app()->config('random_key','MLCE4XP');
-    $all_str = $action.$random.$oid.$random.$user;
-    return hash('sha256',$all_str);
+  public function generateKey(string $str): string {
+    $rand = mt_rand(0, 0x7ffffff);
+    $crypt_string = \MLFW\app()->config('secret_string');
+    return $rand.'-'.\hash("sha256",$rand.$crypt_string.$this->userdata['password'].$str.$this->userdata['login']);
   }
 
-  function checkKey(string $key,string $action,Content $object=null,$user=null) {
-    $right_key = $this->getKey($action,$object,$user);
-    return $key===$right_key;
-  }*/
-
+  public function validateKey(string $str, string $key): bool {
+    if (\strpos($key, '-') === false) return false;
+    list($rand, $crypted) = explode('-', $key, 2);
+    $crypt_string = \MLFW\app()->config('secret_string');
+    $right_key = \hash("sha256",$rand.$crypt_string.$this->userdata['password'].$str. $this->userdata['login']);
+    return $crypted === $right_key;
+  }
+ 
 }
