@@ -92,7 +92,7 @@ class Basic implements \MLFW\IRouter {
   }
 
   public function route($name,$params=[]):string {
-    $base_url = \dirname($_SERVER['PHP_SELF']);
+    $base_url = \str_replace('\\','/',\dirname($_SERVER['PHP_SELF'])); // str_replace is to change Windows dir styles to Unix ones
     if ($this->named_rules===null) $this->loadRules();
     $result='';
     if (empty($this->named_rules[$name])) \MLFW\_dbg(sprintf('No route with name %s!',$name));
