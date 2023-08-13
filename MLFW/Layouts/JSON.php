@@ -14,7 +14,7 @@ use stdClass;
 
 use function \MLFW\app;
 
-class JSON extends Basic {
+class JSON extends HTML {
   function __construct(object $obj=null) {
     parent::__construct();
     if ($obj!==null) $this->data=$obj;
