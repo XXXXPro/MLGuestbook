@@ -11,7 +11,7 @@
 
 namespace MLFW;
 
-class Event implements \Psr\EventDispatcher\StoppableEventInterface {
+class Event extends \stdClass implements \Psr\EventDispatcher\StoppableEventInterface {
   private bool $stopped = false;
   /** Event name used for event dispatching */
   protected string $MLFW_event_name;
