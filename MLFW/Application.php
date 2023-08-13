@@ -41,7 +41,8 @@ class Application implements \Psr\Log\LoggerAwareInterface {
       'display_errors'=>0,
       'debug'=>0,
       'charset'=>'utf-8',
-      'session_name'=>'MLFW_sid'
+      'session_name'=>'MLFW_sid',
+      'secret_string'=>'vexqawdr51@$#'
     ];
     foreach ($default_values as $key=>$def_value) if (!isset($this->_params[$key])) $this->_params[$key]=$def_value;    
   }
