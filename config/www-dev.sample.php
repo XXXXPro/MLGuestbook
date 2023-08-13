@@ -4,7 +4,7 @@
 
 $site_config = [
   /* Secret string to use as salt for hashes and keys generation. REPLACE THIS VALUE IN YOUR APPLICATIONS FOR BETTER SECURITY! */
-  'secrtet_string' => 'vexqawdr51@$#',  
+  'secret_string' => 'vexqawdr51@$#',  
   /* This value will be passed to error_reporing PHP function */
   'error_reporting'=>E_ALL, 
   /* This value will be passed to ini_set PHP function. */
